@@ -219,10 +219,8 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
 .buppa-h { font-weight: 700; color: var(--accent); }
 .buppa-now { margin: 0; font-size: .75rem; color: var(--accent); font-weight: 600; }
 
-.why-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 10px 16px; }
-.why { margin: 0; padding-top: 6px; border-top: 1px solid var(--line); min-width: 0; }
-.why-h { margin: 0 0 4px; font-weight: 700; font-size: .9rem; display: flex; align-items: center; gap: 4px; }
-.why-h .sprite.sm { margin: -6px 0; }
+.why { margin: 4px 0; }
+.why-h { margin: 0 0 2px; font-weight: 700; font-size: .82rem; }
 .why ul { list-style: none; padding: 0; margin: 0; font-size: .8rem; display: flex; flex-direction: column; gap: 3px; }
 .why-k { display: inline-block; min-width: 3.4em; text-align: center; font-size: .68rem; padding: 0 4px; margin-right: 4px;
   border-radius: 4px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
