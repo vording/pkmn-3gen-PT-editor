@@ -16,7 +16,8 @@ test('データ：使用可能なポケモンは型を持ち、禁止ポケモ�
     for (const s of m.sets) assert.ok(s.moves.length >= 1 && s.moves.length <= 4, `${m.name} ${s.label}`);
   }
   assert.ok(!usable.some((m) => BANNED.has(m.name)));
-  assert.equal(SAMPLE_TEAMS.length, 16);
+  assert.equal(SAMPLE_TEAMS.filter((t) => t.source === '考察本 パーティ図鑑').length, 16);
+  assert.ok(SAMPLE_TEAMS.length > 16);
 });
 
 test('実数値：考察本の記載と一致する（Lv50・個体値31）', () => {
@@ -76,4 +77,26 @@ test('型の作成：記載がなければ努力値を推定する', () => {
   const m = buildMember(DEX.get('アーボック'), 0);
   assert.equal(m.evsEstimated, true);
   assert.equal(m.evs.reduce((a, b) => a + b, 0), 508);
+});
+
+test('環境データ：2026年の大会パーティと使用率・ランクが入っている', async () => {
+  const { TOURNAMENT_PARTIES } = await import('../src/data/teams.js');
+  assert.ok(TOURNAMENT_PARTIES.length >= 100);
+  for (const p of TOURNAMENT_PARTIES) for (const n of p.mons) assert.ok(DEX.has(n), n);
+  const snorlax = DEX.get('カビゴン');
+  assert.equal(snorlax.rank2026.rank, 'S+');
+  assert.ok(snorlax.usage2026 > 0.9);
+  assert.equal(snorlax.meta, 'S+');
+});
+
+test('道具：まがったスプーンでエスパー技が強くなる', () => {
+  const spoon = memberOf('ラティオス', DEX.get('ラティオス').sets.findIndex((s) => s.item === 'まがったスプーン'));
+  const plain = { ...spoon, item: '' };
+  const target = memberOf('カビゴン', 0);
+  const psy = resolveMove('サイコキネシス');
+  assert.ok(damageFraction(spoon, target, psy) > damageFraction(plain, target, psy) * 1.05);
+});
+
+test('正誤表：ヌオーはいわなだれを覚えない', () => {
+  for (const s of DEX.get('ヌオー').sets) assert.ok(!s.moves.includes('いわなだれ'));
 });

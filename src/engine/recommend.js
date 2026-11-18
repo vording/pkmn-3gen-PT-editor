@@ -1,19 +1,35 @@
 // パーティ提案エンジン
 // 1) 環境上位のポケモン（重要度の高い型）を「仮想敵」として、各候補の対面有利度を事前計算
-// 2) 仮想敵への回答の有無・タイプ相性の偏り・役割（積み対策など）・考察本の構築での同居実績で評価
+// 2) 仮想敵への回答の有無・タイプ相性の偏り・役割（積み対策など）・構築例や大会での同時採用実績で評価
 // 3) ビームサーチで6体を組み、道具の重複を禁止したまま型を選ぶ
 import { POKEDEX } from '../data/pokedex.js';
-import { SAMPLE_TEAMS } from '../data/teams.js';
+import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES as TYPE_JP } from '../data/types.js';
 import { BANNED, BANNED_ITEMS } from '../data/rules.js';
 import { buildMember, roleLabels } from './model.js';
 import { matchup, defensiveMultiplier } from './matchup.js';
 
-export const TIER_LABEL = { S: '最上位', A: '重要度☆☆☆', B: '重要度☆☆', C: '重要度☆〜' };
-const TIER_VALUE = { S: 1.0, A: 0.7, B: 0.4, C: 0.1 };
-const THREAT_WEIGHT = { S: 4, A: 2, B: 0.6 };
+// 環境ランク：2025/05〜2026/08 の大会成績にもとづくランク（stoic氏）があればそれを、なければ考察本の重要度を使う
+export const TIER_ORDER = ['S+', 'S', 'A', 'B', 'C', 'D', 'P3', 'P2', 'P1'];
+export const TIER_LABEL = {
+  'S+': 'S+', S: 'S', A: 'A', B: 'B', C: 'C', D: 'D', P3: '☆☆☆', P2: '☆☆', P1: '☆',
+};
+const TIER_VALUE = { 'S+': 1.0, S: 0.85, A: 0.7, B: 0.55, C: 0.4, D: 0.3, P3: 0.35, P2: 0.2, P1: 0.05 };
+
+export function metaTier(mon) {
+  if (mon.rank2026) return mon.rank2026.rank;
+  return { S: 'P3', A: 'P3', B: 'P2', C: 'P1' }[mon.tier];
+}
+
+// 仮想敵としての重み：2026年の大会での使用率（KPアーカイブ）とランク集計期間の使用率の大きい方
+function threatWeight(mon) {
+  const usage = Math.max(mon.usage2026 ?? 0, (mon.rank2026?.usage ?? 0) / 100);
+  if (usage >= 0.015) return 6 * Math.sqrt(usage);
+  return { S: 0.4, A: 0.3, B: 0.1 }[mon.tier] ?? 0;
+}
 
 export const DEX = new Map(POKEDEX.map((m) => [m.name, m]));
+for (const m of POKEDEX) m.meta = metaTier(m);
 
 export function isUsable(mon) {
   return !mon.banned && !BANNED.has(mon.name) && mon.base && mon.sets.length > 0;
@@ -26,30 +42,35 @@ export function usableSets(mon) {
     .map(([, i]) => i);
 }
 
-// 考察本掲載構築での同居回数
+// 構築例・大会パーティでの同時採用回数（大会の上位入賞は1.5倍で数える）
 const PAIR_COUNT = new Map();
-for (const team of SAMPLE_TEAMS) {
-  const names = team.members.map((m) => m.name);
+function addPairs(names, w) {
   for (const a of names) for (const b of names) {
-    if (a < b) PAIR_COUNT.set(`${a}|${b}`, (PAIR_COUNT.get(`${a}|${b}`) ?? 0) + 1);
+    if (a < b) PAIR_COUNT.set(`${a}|${b}`, (PAIR_COUNT.get(`${a}|${b}`) ?? 0) + w);
   }
+}
+for (const team of SAMPLE_TEAMS) addPairs(team.members.map((m) => m.name), 1);
+for (const p of TOURNAMENT_PARTIES) {
+  const topCut = p.participants ? Math.max(1, Math.round(p.participants / 4)) : 4;
+  addPairs(p.mons, p.place && p.place <= topCut ? 1.5 : 1);
 }
 export function pairCount(a, b) {
   return PAIR_COUNT.get(a < b ? `${a}|${b}` : `${b}|${a}`) ?? 0;
 }
+const pairScore = (a, b) => Math.min(2, Math.sqrt(pairCount(a, b)) / 2);
 
 let cache = null;
 function context() {
   if (cache) return cache;
   const usable = POKEDEX.filter(isUsable);
-  // 仮想敵：最上位は代表的な型を3つまで、☆☆☆は2つ、☆☆は1つ
+  // 仮想敵：使用率の高いポケモンほど多くの型（最大3つ）を、使用率で重み付けして入れる
   const threats = [];
   for (const mon of usable) {
-    const w = THREAT_WEIGHT[mon.tier];
+    const w = threatWeight(mon);
     if (!w) continue;
-    const n = mon.tier === 'S' ? 3 : mon.tier === 'A' ? 2 : 1;
+    const n = w >= 5 ? 3 : w >= 1.5 ? 2 : 1;
     const idx = usableSets(mon).slice(0, n);
-    for (const i of idx) threats.push({ member: buildMember(mon, i), weight: w / idx.length, name: mon.name, tier: mon.tier });
+    for (const i of idx) threats.push({ member: buildMember(mon, i), weight: w / idx.length, name: mon.name, tier: mon.meta });
   }
   cache = { usable, threats, members: new Map(), rows: new Map() };
   return cache;
@@ -147,15 +168,18 @@ export function scoreTeam(members, opts = {}) {
   if (choice >= 2) roles -= 1.0; // 道具重複不可だが念のため
 
   let tier = 0;
-  for (const m of members) tier += TIER_VALUE[m.mon.tier] ?? 0;
+  for (const m of members) tier += TIER_VALUE[m.mon.meta] ?? 0;
+  // 型の並びは「最近の記事の型 → 考察本の型」なので、上にある型ほど少し優先する
+  let setPref = 0;
+  for (const m of members) setPref += Math.max(0, 0.8 - 0.2 * m.setIndex);
 
   let synergy = 0;
   for (let i = 0; i < members.length; i++) {
-    for (let j = i + 1; j < members.length; j++) synergy += Math.min(2, pairCount(members[i].name, members[j].name));
+    for (let j = i + 1; j < members.length; j++) synergy += pairScore(members[i].name, members[j].name);
   }
 
   let diversity = 0;
-  if (opts.avoid) for (const m of members) if (opts.avoid.has(m.name)) diversity -= 2.5;
+  if (opts.avoid) for (const m of members) if (opts.avoid.has(m.name)) diversity -= 1.5;
 
   const parts = {
     coverage: coverage * WEIGHTS.coverage,
@@ -163,6 +187,7 @@ export function scoreTeam(members, opts = {}) {
     roles: roles * WEIGHTS.roles,
     tier: tier * WEIGHTS.tier,
     synergy: synergy * WEIGHTS.synergy,
+    setPref,
     diversity,
   };
   const total = Object.values(parts).reduce((a, b) => a + b, 0);
@@ -174,7 +199,7 @@ function candidatePool(opts) {
   const pool = [];
   for (const mon of usable) {
     if (opts.exclude?.has(mon.name)) continue;
-    if (mon.tier === 'C' && !opts.includeMinor) continue;
+    if (mon.meta === 'P1' && !opts.includeMinor) continue;
     if (!opts.allowLati && (mon.name === 'ラティオス' || mon.name === 'ラティアス')) continue;
     for (const i of usableSets(mon).slice(0, 4)) pool.push(memberOf(mon.name, i));
   }
@@ -299,7 +324,7 @@ function describeTeam(members, locked) {
       const covers = [...lockedWeak].filter((t) => defensiveMultiplier(m, t) <= 0.5);
       if (covers.length) reasons.push(`${lockedMembers.map((x) => x.name).join('・')}の弱点（${covers.map((t) => TYPE_JP[t]).join('・')}）を半減以下で受けられる`);
       const pc = lockedMembers.reduce((s, x) => s + pairCount(x.name, m.name), 0);
-      if (pc > 0) reasons.push(`考察本の掲載構築で${lockedMembers.map((x) => x.name).join('・')}と${pc}回同居`);
+      if (pc >= 1) reasons.push(`構築例・大会パーティで${lockedMembers.map((x) => x.name).join('・')}と${Math.round(pc)}回同時採用`);
     }
     return { member: m, roles: roleLabels(m), reasons };
   });
@@ -308,7 +333,7 @@ function describeTeam(members, locked) {
   const prof = typeProfile(members);
   const warnings = [];
   for (const t of TYPES) if (prof[t].weak >= 3) warnings.push(`${TYPE_JP[t]}タイプの技を弱点とするポケモンが${prof[t].weak}体`);
-  for (const t of threatTable) if (t.bestScore < -0.1 && t.weight >= 1) warnings.push(`${t.name}に有利なポケモンがいない（${TIER_LABEL[t.tier]}）`);
+  for (const t of threatTable) if (t.bestScore < -0.1 && t.weight >= 1) warnings.push(`${t.name}に有利なポケモンがいない（環境ランク${TIER_LABEL[t.tier]}）`);
   if (!members.some((m) => m.tags.phaze || m.tags.encore)) warnings.push('『ほえる』『ふきとばし』『アンコール』などの積み・バトン対策がない');
   if (members.filter((m) => m.tags.sleep).length >= 2) warnings.push('眠り技持ちが複数（ルール上、同時に2体以上は眠らせられない）');
   if (members.some((m) => m.ability === 'かげふみ')) warnings.push('相手も『かげふみ』を手持ちに入れている場合、ソーナンスは選出できない');
@@ -321,8 +346,6 @@ function describeTeam(members, locked) {
     threats: threatTable,
     warnings,
     selections: bestSelections(members, must).map((s) => s.trio.map((m) => m.name)),
-    samples: SAMPLE_TEAMS.filter((t) => t.members.filter((x) => members.some((m) => m.name === x.name)).length >= 3)
-      .map((t) => ({ no: t.no, title: t.title, year: t.year, overlap: t.members.filter((x) => members.some((m) => m.name === x.name)).map((x) => x.name) })),
   };
 }
 

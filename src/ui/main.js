@@ -1,9 +1,9 @@
 // ブラウザUI（依存なし）
 import { POKEDEX } from '../data/pokedex.js';
-import { SAMPLE_TEAMS } from '../data/teams.js';
+import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
-import { recommend, isUsable, usableSets, TIER_LABEL, memberOf, DEX } from '../engine/recommend.js';
+import { recommend, isUsable, usableSets, TIER_LABEL, TIER_ORDER, memberOf, DEX } from '../engine/recommend.js';
 import { STAT_KEYS } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
@@ -33,7 +33,8 @@ const h = (tag, attrs = {}, html = '') => {
   return el;
 };
 const typeBadge = (t) => `<span class="type" style="--c:${TYPE_COLORS[t]}">${TYPE_NAMES[t]}</span>`;
-const tierBadge = (tier) => `<span class="tier tier-${tier}">${tier === 'S' ? '最上位' : tier === 'A' ? '☆☆☆' : tier === 'B' ? '☆☆' : '☆'}</span>`;
+const tierBadge = (tier) => `<span class="tier tier-${tier.replace('+', 'p')}" title="${tier.startsWith('P') ? '考察本の重要度' : '環境ランク（2025/05〜2026/08）'}">${TIER_LABEL[tier]}</span>`;
+const pct = (x) => `${(x * 100).toFixed(x >= 0.1 ? 0 : 1)}%`;
 // ドット絵：PokeAPI が GitHub で公開しているエメラルド版スプライトを表示時に読み込む（リポジトリには含めない）
 const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/emerald/';
 const sprite = (name, cls = '') => (DEX_NO[name]
@@ -41,7 +42,7 @@ const sprite = (name, cls = '') => (DEX_NO[name]
   : '');
 const kata = (s) => s.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60));
 
-const USABLE = POKEDEX.filter(isUsable).sort((a, b) => 'SABC'.indexOf(a.tier) - 'SABC'.indexOf(b.tier) || a.name.localeCompare(b.name, 'ja'));
+const USABLE = POKEDEX.filter(isUsable).sort((a, b) => (b.usage2026 ?? 0) - (a.usage2026 ?? 0) || TIER_ORDER.indexOf(a.meta) - TIER_ORDER.indexOf(b.meta) || a.name.localeCompare(b.name, 'ja'));
 
 function render() {
   app.innerHTML = '';
@@ -57,19 +58,19 @@ function renderPicker() {
   search.addEventListener('input', () => { state.query = search.value; updateGrid(); });
   const typeSel = h('select', { 'aria-label': 'タイプで絞り込み' }, `<option value="">すべてのタイプ</option>${TYPES.map((t) => `<option value="${t}" ${state.type === t ? 'selected' : ''}>${TYPE_NAMES[t]}</option>`).join('')}`);
   typeSel.addEventListener('change', () => { state.type = typeSel.value; updateGrid(); });
-  const tierSel = h('select', { 'aria-label': '重要度で絞り込み' }, `<option value="">すべての重要度</option>${['S', 'A', 'B', 'C'].map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>${TIER_LABEL[t]}</option>`).join('')}`);
+  const tierSel = h('select', { 'aria-label': 'ランクで絞り込み' }, `<option value="">すべてのランク</option>${TIER_ORDER.map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>${t.startsWith('P') ? `考察本 ${TIER_LABEL[t]}` : `環境ランク ${TIER_LABEL[t]}`}</option>`).join('')}`);
   tierSel.addEventListener('change', () => { state.tier = tierSel.value; updateGrid(); });
   controls.append(search, typeSel, tierSel);
   const grid = h('div', { class: 'grid' });
   sec.append(controls, grid);
   function updateGrid() {
     const q = kata(state.query.trim());
-    const list = USABLE.filter((m) => (!q || m.name.includes(q)) && (!state.type || m.types.includes(state.type)) && (!state.tier || m.tier === state.tier));
+    const list = USABLE.filter((m) => (!q || m.name.includes(q)) && (!state.type || m.types.includes(state.type)) && (!state.tier || m.meta === state.tier));
     grid.innerHTML = '';
     for (const m of list) {
       const on = state.locked.some((l) => l.name === m.name);
       const b = h('button', { class: `mon ${on ? 'on' : ''}`, type: 'button', title: `${m.name}（${m.base.join('-')}）`, 'aria-pressed': on ? 'true' : 'false' },
-        `${sprite(m.name, 'sm')}<span class="mon-text"><span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m.tier)}</span></span>`);
+        `${sprite(m.name, 'sm')}<span class="mon-text"><span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m.meta)}</span></span>`);
       b.addEventListener('click', () => toggleLock(m.name));
       grid.append(b);
     }
@@ -105,8 +106,8 @@ function renderLocked() {
   for (const l of state.locked) {
     const mon = DEX.get(l.name);
     const row = h('div', { class: 'locked' });
-    const head = h('div', { class: 'locked-head' }, `${sprite(mon.name, 'sm')}<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon.tier)}
-      <span class="muted small">種族値 ${mon.base.join('-')} ／ 特性 ${esc(mon.abilities.join('・'))}${mon.spread ? ` ／ 代表的な配分 ${esc(mon.spread)}` : ''}</span>`);
+    const head = h('div', { class: 'locked-head' }, `${sprite(mon.name, 'sm')}<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon.meta)}
+      <span class="muted small">${mon.usage2026 ? `2026年大会の使用率 ${pct(mon.usage2026)} ／ ` : ''}${mon.rank2026 ? `勝率 ${mon.rank2026.win}% ／ ` : ''}種族値 ${mon.base.join('-')} ／ 特性 ${esc(mon.abilities.join('・'))}${mon.spread ? ` ／ 代表的な配分 ${esc(mon.spread)}` : ''}</span>`);
     const rm = h('button', { class: 'ghost', type: 'button', 'aria-label': `${mon.name}を外す` }, '外す');
     rm.addEventListener('click', () => toggleLock(mon.name));
     head.append(rm);
@@ -211,7 +212,7 @@ function renderTeam(r, pi) {
     const locked = state.locked.some((l) => l.name === m.name);
     const card = h('article', { class: `member ${locked ? 'is-locked' : ''}` });
     card.innerHTML = `
-      <header>${sprite(m.name)}<strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon.tier)}</header>
+      <header>${sprite(m.name)}<strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon.meta)}</header>
       <div class="kv"><span>持ち物</span><b>${esc(m.item || '自由')}</b></div>
       <div class="kv"><span>特性</span><b>${esc(m.ability)}</b><span>性格</span><b>${esc(m.nature)}</b></div>
       ${statLine(m)}
@@ -261,30 +262,41 @@ function scoreCell(v) {
 }
 
 function renderThreats(r) {
-  const top = r.threats.filter((t) => t.tier === 'S' || t.tier === 'A').slice(0, 30);
+  const top = r.threats.slice(0, 30);
   const head = r.members.map((d) => `<th class="vert">${esc(d.member.name)}</th>`).join('');
   const body = top.map((t) => `<tr><th>${esc(t.name)} ${tierBadge(t.tier)}</th>${t.scores.map(scoreCell).join('')}</tr>`).join('');
-  return h('div', { class: 'panel wide' }, `<h3>仮想敵との対面（環境上位）</h3>
+  return h('div', { class: 'panel wide' }, `<h3>仮想敵との対面（使用率の高い順）</h3>
     <div class="scroll"><table class="threats"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>
     <p class="muted small">◎有利 ○やや有利 △五分 ▲やや不利 ×不利。各ポケモンの代表的な型同士で、簡易ダメージ計算・素早さ・状態異常技・大爆発による1:1交換などから見積もった目安です。</p>`);
 }
 
 function renderSamples(r) {
-  const el = h('div', { class: 'panel' }, '<h3>考察本の参考構築</h3>');
+  const el = h('div', { class: 'panel' }, '<h3>似ている構築</h3>');
   const names = new Set(r.members.map((d) => d.member.name));
-  const related = SAMPLE_TEAMS.map((t) => ({ t, hit: t.members.filter((m) => names.has(m.name)).length }))
-    .filter((x) => x.hit >= 2).sort((a, b) => b.hit - a.hit).slice(0, 5);
-  if (!related.length) {
-    el.append(h('p', { class: 'muted small' }, '共通するポケモンが2体以上いる掲載構築はありません。'));
+  const hits = (list) => list.filter((n) => names.has(n)).length;
+  const examples = SAMPLE_TEAMS.map((t) => ({ t, hit: hits(t.members.map((m) => m.name)) }))
+    .filter((x) => x.hit >= 3).sort((a, b) => b.hit - a.hit || b.t.year - a.t.year).slice(0, 5);
+  const parties = TOURNAMENT_PARTIES.map((p) => ({ p, hit: hits(p.mons) }))
+    .filter((x) => x.hit >= 4).sort((a, b) => b.hit - a.hit || (a.p.place ?? 99) - (b.p.place ?? 99)).slice(0, 6);
+  if (!examples.length && !parties.length) {
+    el.append(h('p', { class: 'muted small' }, '3体以上共通する構築例・4体以上共通する大会パーティはありません。'));
     return el;
   }
-  const ul = h('ul', { class: 'samples' });
-  for (const { t, hit } of related) {
-    const li = h('li', {}, `<details><summary>#${String(t.no).padStart(2, '0')} ${esc(t.title)}（${t.year}）<span class="muted small"> 共通${hit}体</span></summary>
-      <ul>${t.members.map((m) => `<li class="${names.has(m.name) ? 'hit' : ''}"><b>${esc(m.name)}</b> ＠${esc(m.item)} ／ ${esc(m.nature)} ／ ${esc(m.moves.join('・'))}</li>`).join('')}</ul></details>`);
-    ul.append(li);
+  if (examples.length) {
+    const ul = h('ul', { class: 'samples' });
+    for (const { t, hit } of examples) {
+      ul.append(h('li', {}, `<details><summary>${esc(t.title)}（${t.year}）<span class="muted small"> 共通${hit}体・${esc(t.source)}</span></summary>
+        <ul>${t.members.map((m) => `<li class="${names.has(m.name) ? 'hit' : ''}"><b>${esc(m.name)}</b> ＠${esc(m.item)}${m.nature ? ` ／ ${esc(m.nature)}` : ''}${m.moves.length ? ` ／ ${esc(m.moves.join('・'))}` : ''}</li>`).join('')}</ul></details>`));
+    }
+    el.append(h('p', { class: 'small sub-h' }, '構築例（考察本・ブログ記事）'), ul);
   }
-  el.append(ul);
+  if (parties.length) {
+    const ul = h('ul', { class: 'samples parties' });
+    for (const { p, hit } of parties) {
+      ul.append(h('li', {}, `<span class="muted small">${esc(p.event)}${p.place ? ` ${p.place}位` : ''}${p.player ? `（${esc(p.player)}）` : ''}・共通${hit}体</span><br>${p.mons.map((n) => (names.has(n) ? `<b>${esc(n)}</b>` : esc(n))).join(' ')}`));
+    }
+    el.append(h('p', { class: 'small sub-h' }, '大会で使われたパーティ'), ul);
+  }
   return el;
 }
 

@@ -39,6 +39,10 @@ export function damageFraction(att, def, move) {
   if (physical && att.item === 'こだわりハチマキ') A *= 1.5;
   if (physical && att.item === 'ふといホネ' && (att.name === 'ガラガラ' || att.name === 'カラカラ')) A *= 2;
   if (!physical && att.item === 'でんきだま' && att.name === 'ピカチュウ') A *= 2;
+  if (move.type === 'psychic' && att.item === 'まがったスプーン') A *= 1.1;
+  if (move.type === 'dragon' && att.item === 'りゅうのキバ') A *= 1.1;
+  if (move.type === 'electric' && att.item === 'じしゃく') A *= 1.1;
+  if (move.type === 'fire' && att.item === 'もくたん') A *= 1.1;
   if (!physical && att.item === 'しんかいのキバ' && att.name === 'パールル') A *= 2;
   // 積み技・『きんぞくおん』は1回分の補正を見込む
   if (physical && (att.tags.setupPhys || att.tags.curse)) A *= 1.4;
@@ -81,7 +85,10 @@ function statusEdge(a, b) {
   if (a.tags.para && !b.types.includes('ground') && b.ability !== 'じゅうなん') edge += 0.15;
   if (a.tags.burn && bPhysical && !b.types.includes('fire')) edge += 0.3;
   if (a.tags.toxic && !b.types.includes('poison') && !b.types.includes('steel')) edge += 0.1;
-  if (a.tags.confuse && a.tags.sub) edge += 0.1;
+  // いばる＋みがわり：先手を取れる相手には混乱と身代わりで大きく試行回数を稼げる
+  if (a.tags.confuse && a.tags.sub) edge += a.stats[5] > b.stats[5] ? 0.3 : 0.1;
+  // 先手のいわなだれ・ずつき等によるひるみ
+  if (a.stats[5] > b.stats[5] && a.set.moves.some((m) => m === 'いわなだれ' || m === 'ずつき')) edge += 0.08;
   return edge;
 }
 
@@ -91,6 +98,10 @@ export function matchup(a, b) {
   const atkB = bestAttack(b, a);
   let fracA = atkA.frac;
   let fracB = atkB.frac;
+  // HP1（ふしぎなまもり）はやけど・どく・混乱の自傷で倒れる
+  const fragile = (x, y) => y.stats[0] === 1 && (x.tags.burn || x.tags.toxic || x.tags.confuse);
+  if (fragile(a, b)) fracA = Math.max(fracA, 0.5);
+  if (fragile(b, a)) fracB = Math.max(fracB, 0.5);
   // カウンター／ミラーコート：受けたダメージの倍返し（耐えられる場合）
   if (atkB.move && fracB < 1) {
     const counterable = atkB.move.physical

@@ -1,4 +1,4 @@
-// 自動生成: 『ポケモンエメラルドシングルバトル考察本』v1.4 の掲載データ（型・配分・構築）を整形したもの
+// 自動生成: 『ポケモンエメラルドシングルバトル考察本』v1.4（型・配分）、2025〜26年のブログ記事の型、KPアーカイブ／stoic氏キャラランクの使用率を整形したもの
 export const POKEDEX = [
  {
   "name": "アーボック",
@@ -32,7 +32,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アーマルド",
@@ -98,7 +101,10 @@ export const POKEDEX = [
     "nature": "いじっぱり",
     "ability": "カブトアーマー"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アゲハント",
@@ -132,7 +138,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アズマオウ",
@@ -166,7 +175,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アノプス",
@@ -200,7 +212,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アブソル",
@@ -233,7 +248,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アメタマ",
@@ -267,7 +285,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アメモース",
@@ -301,7 +322,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アリアドス",
@@ -336,7 +360,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "アンノーン",
@@ -366,7 +393,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "イノムー",
@@ -400,7 +430,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "イルミーゼ",
@@ -433,7 +466,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "イワーク",
@@ -468,7 +504,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ウインディ",
@@ -515,7 +554,10 @@ export const POKEDEX = [
     "nature": "おくびょう",
     "ability": "いかく"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ウソッキー",
@@ -549,7 +591,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ウツボット",
@@ -583,7 +628,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "エアームド",
@@ -607,6 +655,21 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『わんぱく』HB振り",
   "sets": [
+   {
+    "label": "テンプレ",
+    "moves": [
+     "ドリルくちばし",
+     "ほえる",
+     "まきびし",
+     "ねむる"
+    ],
+    "item": "カゴのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "わんぱく",
+    "ability": "がんじょう",
+    "stats": "171-101-209-*-90-93",
+    "evs": "244-4-236-0-0-20"
+   },
    {
     "label": "『カウンター』",
     "moves": [
@@ -693,7 +756,10 @@ export const POKEDEX = [
     "nature": "わんぱく",
     "ability": "がんじょう"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0396,
+  "topUsage2026": 0
  },
  {
   "name": "エイパム",
@@ -727,7 +793,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "エーフィ",
@@ -760,7 +829,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "エネコロロ",
@@ -793,7 +865,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "エビワラー",
@@ -826,7 +901,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "エレブー",
@@ -859,7 +937,10 @@ export const POKEDEX = [
     "item": "くろおび",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "エンテイ",
@@ -903,7 +984,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オオスバメ",
@@ -937,7 +1021,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オーダイル",
@@ -970,7 +1057,10 @@ export const POKEDEX = [
     "item": "ヤタピのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オオタチ",
@@ -1004,7 +1094,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オクタン",
@@ -1037,7 +1130,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オコリザル",
@@ -1070,7 +1166,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オドシシ",
@@ -1103,7 +1202,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オニゴーリ",
@@ -1136,7 +1238,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オニドリル",
@@ -1170,7 +1275,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "オムスター",
@@ -1205,7 +1313,10 @@ export const POKEDEX = [
     "item": "しんぴのしずく",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "カイリキー",
@@ -1249,7 +1360,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "カイリュー",
@@ -1271,7 +1385,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": true,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "カイロス",
@@ -1304,7 +1421,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "カクレオン",
@@ -1337,7 +1457,10 @@ export const POKEDEX = [
     "item": "きょうせいギプス",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "カビゴン",
@@ -1360,6 +1483,84 @@ export const POKEDEX = [
   "banned": false,
   "spread": "",
   "sets": [
+   {
+    "label": "鈍いカウンター",
+    "moves": [
+     "のしかかり",
+     "カウンター",
+     "のろい",
+     "かみなり"
+    ],
+    "item": "たべのこし",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "めんえき",
+    "stats": "263-150-110-76-131-55",
+    "evs": "220-52-196-0-4-36",
+    "alsoIn": [
+     "パーティ図鑑#06"
+    ]
+   },
+   {
+    "label": "対面型",
+    "moves": [
+     "のしかかり",
+     "じしん",
+     "シャドーボール",
+     "じばく"
+    ],
+    "item": "ラムのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "めんえき",
+    "stats": "235-178-85-*-162-51",
+    "evs": "0-252-0-0-252-4"
+   },
+   {
+    "label": "鈍いカウンター地割れ",
+    "moves": [
+     "のしかかり",
+     "のろい",
+     "カウンター",
+     "じわれ"
+    ],
+    "item": "たべのこし",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "いじっぱり",
+    "ability": "めんえき",
+    "stats": "263-150-110-*-131-55",
+    "evs": "220-52-196-0-4-36"
+   },
+   {
+    "label": "鈍いカウンター地震",
+    "moves": [
+     "のしかかり",
+     "じしん",
+     "のろい",
+     "カウンター"
+    ],
+    "item": "たべのこし",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "いじっぱり",
+    "ability": "めんえき",
+    "stats": "263-150-110-*-131-55",
+    "evs": "220-52-196-0-4-36"
+   },
+   {
+    "label": "鈍い眠る（恩返し地震）",
+    "moves": [
+     "おんがえし",
+     "じしん",
+     "のろい",
+     "ねむる"
+    ],
+    "item": "カゴのみ",
+    "source": "マイン氏の構築記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "めんえき",
+    "stats": "256-154-110-*-133-57",
+    "evs": "164-76-196-0-20-52"
+   },
    {
     "label": "『カウンター』『じばく』",
     "moves": [
@@ -1558,19 +1759,6 @@ export const POKEDEX = [
     ]
    },
    {
-    "label": "構築#06採用型",
-    "moves": [
-     "のしかかり",
-     "のろい",
-     "カウンター",
-     "かみなり"
-    ],
-    "item": "たべのこし",
-    "source": "パーティ図鑑#06",
-    "nature": "しんちょう",
-    "ability": "めんえき"
-   },
-   {
     "label": "構築#16採用型",
     "moves": [
      "のしかかり",
@@ -1583,7 +1771,14 @@ export const POKEDEX = [
     "nature": "いじっぱり",
     "ability": "めんえき"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "S+",
+   "usage": 91.94,
+   "win": 49.93
+  },
+  "usage2026": 0.9406,
+  "topUsage2026": 0.9167
  },
  {
   "name": "カブトプス",
@@ -1618,7 +1813,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "カポエラー",
@@ -1651,7 +1849,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "カメックス",
@@ -1684,7 +1885,10 @@ export const POKEDEX = [
     "item": "ヤタピのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "カモネギ",
@@ -1719,7 +1923,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ガラガラ",
@@ -1813,7 +2020,14 @@ export const POKEDEX = [
     "nature": "いじっぱり",
     "ability": "いしあたま"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "D",
+   "usage": 2.81,
+   "win": 45.45
+  },
+  "usage2026": 0.0792,
+  "topUsage2026": 0.0417
  },
  {
   "name": "ガルーラ",
@@ -1846,7 +2060,10 @@ export const POKEDEX = [
     "item": "ピントレンズ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キノガッサ",
@@ -1889,7 +2106,10 @@ export const POKEDEX = [
      "パーティ図鑑#12"
     ]
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "キノココ",
@@ -1922,7 +2142,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キマワリ",
@@ -1956,7 +2179,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "note": "めざめるパワー炎は悪も候補"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ギャラドス",
@@ -1979,6 +2205,24 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『ようき』AS振り",
   "sets": [
+   {
+    "label": "電磁波眠る",
+    "moves": [
+     "めざめるパワー飛",
+     "じしん",
+     "ねむる",
+     "でんじは"
+    ],
+    "item": "カゴのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "いかく",
+    "stats": "177-177-119-*-121-123",
+    "evs": "52-124-156-0-0-176",
+    "alsoIn": [
+     "個別考察"
+    ]
+   },
    {
     "label": "『じたばた』",
     "moves": [
@@ -2026,19 +2270,15 @@ export const POKEDEX = [
     ],
     "item": "たべのこし",
     "source": "個別考察"
-   },
-   {
-    "label": "型2",
-    "moves": [
-     "めざめるパワー飛",
-     "じしん",
-     "でんじは",
-     "ねむる"
-    ],
-    "item": "カゴのみ",
-    "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "B",
+   "usage": 9.97,
+   "win": 55.13
+  },
+  "usage2026": 0.0693,
+  "topUsage2026": 0.0417
  },
  {
   "name": "ギャロップ",
@@ -2083,7 +2323,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キュウコン",
@@ -2116,7 +2359,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キリンリキ",
@@ -2151,7 +2397,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キレイハナ",
@@ -2184,7 +2433,10 @@ export const POKEDEX = [
     "item": "ヤタピのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キングドラ",
@@ -2229,7 +2481,10 @@ export const POKEDEX = [
     "item": "ヤタピのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "キングラー",
@@ -2263,7 +2518,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "クチート",
@@ -2297,7 +2555,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "グライガー",
@@ -2332,7 +2593,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "グラエナ",
@@ -2365,7 +2629,10 @@ export const POKEDEX = [
     "item": "くろいメガネ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "グランブル",
@@ -2398,7 +2665,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "クロバット",
@@ -2432,7 +2702,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ケッキング",
@@ -2465,7 +2738,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ゲンガー",
@@ -2488,6 +2764,78 @@ export const POKEDEX = [
   "banned": false,
   "spread": "",
   "sets": [
+   {
+    "label": "鬼火大爆発",
+    "moves": [
+     "サイコキネシス",
+     "ほのおのパンチ",
+     "おにび",
+     "だいばくはつ"
+    ],
+    "item": "クラボのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "むじゃき",
+    "ability": "ふゆう",
+    "stats": "135-92-105-151-86-178",
+    "evs": "0-52-196-4-4-252"
+   },
+   {
+    "label": "CS道連れ",
+    "moves": [
+     "サイコキネシス",
+     "れいとうパンチ",
+     "１０まんボルト",
+     "みちづれ"
+    ],
+    "item": "ラムのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "おくびょう",
+    "ability": "ふゆう",
+    "stats": "135-*-81-182-95-178",
+    "evs": "0-0-4-252-0-252"
+   },
+   {
+    "label": "道連れ気合パンチ",
+    "moves": [
+     "シャドーボール",
+     "だいばくはつ",
+     "みちづれ",
+     "きあいパンチ"
+    ],
+    "item": "ラムのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ようき",
+    "ability": "ふゆう",
+    "stats": "135-117-81-135-95-178",
+    "evs": "0-252-4-0-0-252"
+   },
+   {
+    "label": "身代わり気合パンチ道連れ",
+    "moves": [
+     "シャドーボール",
+     "みがわり",
+     "きあいパンチ",
+     "みちづれ"
+    ],
+    "item": "ラムのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ようき",
+    "ability": "ふゆう",
+    "stats": "135-117-81-135-95-178",
+    "evs": "0-252-4-0-0-252"
+   },
+   {
+    "label": "めざ炎鬼火大爆発",
+    "moves": [
+     "サイコキネシス",
+     "めざめるパワー炎",
+     "おにび",
+     "だいばくはつ"
+    ],
+    "item": "オボンのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "ability": "ふゆう"
+   },
    {
     "label": "『いばる』",
     "moves": [
@@ -2625,7 +2973,14 @@ export const POKEDEX = [
     "nature": "おくびょう",
     "ability": "ふゆう"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 24.17,
+   "win": 48.15
+  },
+  "usage2026": 0.3564,
+  "topUsage2026": 0.4583
  },
  {
   "name": "ケンタロス",
@@ -2658,7 +3013,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "コータス",
@@ -2691,7 +3049,10 @@ export const POKEDEX = [
     "item": "カゴのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "コモルー",
@@ -2724,7 +3085,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ゴルダック",
@@ -2758,7 +3122,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ゴローニャ",
@@ -2793,7 +3160,10 @@ export const POKEDEX = [
     "item": "ピントレンズ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "サーナイト",
@@ -2866,7 +3236,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "ability": "シンクロ"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "サイドン",
@@ -2947,7 +3320,10 @@ export const POKEDEX = [
     "nature": "いじっぱり",
     "ability": "いしあたま"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "サクラビス",
@@ -2980,7 +3356,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "サナギラス",
@@ -3014,7 +3393,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "サニーゴ",
@@ -3062,7 +3444,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "ability": "はりきり"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "サマヨール",
@@ -3084,6 +3469,30 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『わんぱく』HB振り",
   "sets": [
+   {
+    "label": "鬼火呪い",
+    "moves": [
+     "シャドーボール",
+     "おにび",
+     "のろい",
+     "ねむる"
+    ],
+    "item": "カゴのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "ability": "プレッシャー"
+   },
+   {
+    "label": "冷凍瞑想",
+    "moves": [
+     "れいとうビーム",
+     "めいそう",
+     "おにび",
+     "ねむる"
+    ],
+    "item": "カゴのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "ability": "プレッシャー"
+   },
    {
     "label": "『ふういん』",
     "moves": [
@@ -3140,7 +3549,14 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "B",
+   "usage": 11.51,
+   "win": 48.89
+  },
+  "usage2026": 0.0792,
+  "topUsage2026": 0.0833
  },
  {
   "name": "サメハダー",
@@ -3174,7 +3590,10 @@ export const POKEDEX = [
     "item": "きあいのハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "サワムラー",
@@ -3207,7 +3626,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ザングース",
@@ -3251,7 +3673,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "サンダー",
@@ -3274,6 +3699,97 @@ export const POKEDEX = [
   "banned": false,
   "spread": "",
   "sets": [
+   {
+    "label": "アタッカー",
+    "moves": [
+     "かみなり",
+     "めざめるパワー草",
+     "みがわり",
+     "でんじは"
+    ],
+    "item": "ラムのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "おくびょう",
+    "ability": "プレッシャー",
+    "stats": "165-*-105-177-111-167",
+    "evs": "0-0-0-252-4-252"
+   },
+   {
+    "label": "耐久振り",
+    "moves": [
+     "かみなり",
+     "めざめるパワー草",
+     "ドリルくちばし",
+     "でんじは"
+    ],
+    "item": "せんせいのツメ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ひかえめ",
+    "ability": "プレッシャー",
+    "stats": "193-99-123-176-111-123",
+    "evs": "220-0-144-120-4-20",
+    "alsoIn": [
+     "パーティ図鑑#06"
+    ]
+   },
+   {
+    "label": "ストッパー（爪）",
+    "moves": [
+     "１０まんボルト",
+     "めざめるパワー氷",
+     "ドリルくちばし",
+     "でんじは"
+    ],
+    "item": "せんせいのツメ",
+    "source": "マイン氏の構築記事（2025）",
+    "nature": "ひかえめ",
+    "ability": "プレッシャー",
+    "stats": "193-99-123-176-111-123",
+    "evs": "220-0-140-116-4-24"
+   },
+   {
+    "label": "雷電磁波吠える",
+    "moves": [
+     "かみなり",
+     "めざめるパワー氷",
+     "でんじは",
+     "ほえる"
+    ],
+    "item": "ラムのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ひかえめ",
+    "ability": "プレッシャー",
+    "stats": "165-*-120-178-110-152",
+    "evs": "0-0-116-132-0-252"
+   },
+   {
+    "label": "ヤタピ金属音",
+    "moves": [
+     "かみなり",
+     "めざめるパワー草",
+     "みがわり",
+     "きんぞくおん"
+    ],
+    "item": "ヤタピのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ひかえめ",
+    "ability": "プレッシャー",
+    "stats": "165-*-105-193-110-152",
+    "evs": "0-0-0-244-0-252"
+   },
+   {
+    "label": "毒眠る",
+    "moves": [
+     "かみなり",
+     "めざめるパワー草",
+     "どくどく",
+     "ねむる"
+    ],
+    "item": "ラムのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ひかえめ",
+    "ability": "プレッシャー"
+   },
    {
     "label": "『きんぞくおん』",
     "moves": [
@@ -3423,19 +3939,6 @@ export const POKEDEX = [
     "ability": "プレッシャー"
    },
    {
-    "label": "構築#06採用型",
-    "moves": [
-     "かみなり",
-     "めざめるパワー草",
-     "ドリルくちばし",
-     "でんじは"
-    ],
-    "item": "せんせいのツメ",
-    "source": "パーティ図鑑#06",
-    "nature": "ひかえめ",
-    "ability": "プレッシャー"
-   },
-   {
     "label": "構築#10採用型",
     "moves": [
      "１０まんボルト",
@@ -3487,7 +3990,14 @@ export const POKEDEX = [
     "nature": "おくびょう",
     "ability": "プレッシャー"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "S+",
+   "usage": 71.87,
+   "win": 50.18
+  },
+  "usage2026": 0.7228,
+  "topUsage2026": 0.7917
  },
  {
   "name": "サンダース",
@@ -3593,7 +4103,14 @@ export const POKEDEX = [
     "nature": "おくびょう",
     "ability": "ちくでん"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "B",
+   "usage": 7.42,
+   "win": 60.34
+  },
+  "usage2026": 0.0396,
+  "topUsage2026": 0.0417
  },
  {
   "name": "サンドパン",
@@ -3626,7 +4143,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "シードラ",
@@ -3647,7 +4167,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ジーランス",
@@ -3693,7 +4216,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "シザリガー",
@@ -3728,7 +4254,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "シャワーズ",
@@ -3772,7 +4301,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ジュカイン",
@@ -3836,7 +4368,14 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "D",
+   "usage": 5.37,
+   "win": 35.71
+  },
+  "usage2026": 0.0594,
+  "topUsage2026": 0
  },
  {
   "name": "ジュゴン",
@@ -3870,7 +4409,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ジュペッタ",
@@ -3914,7 +4456,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "スイクン",
@@ -3937,7 +4482,22 @@ export const POKEDEX = [
   "spread": "『ずぶとい』HB振り",
   "sets": [
    {
-    "label": "『みがわり』",
+    "label": "瞑想",
+    "moves": [
+     "なみのり",
+     "れいとうビーム",
+     "めいそう",
+     "ねむる"
+    ],
+    "item": "たべのこし",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ずぶとい",
+    "ability": "プレッシャー",
+    "stats": "205-*-167-110-135-123",
+    "evs": "236-0-116-0-0-140"
+   },
+   {
+    "label": "身代わり瞑想",
     "moves": [
      "なみのり",
      "めいそう",
@@ -3945,12 +4505,13 @@ export const POKEDEX = [
      "まもる"
     ],
     "item": "たべのこし",
-    "source": "努力値振りの倉庫",
-    "nature": "おくびょう",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ずぶとい",
     "ability": "プレッシャー",
-    "stats": "205-*-141-110-135-147",
-    "evs": "236-0-44-0-0-228",
+    "stats": "205-*-167-110-135-123",
+    "evs": "236-0-116-0-0-140",
     "alsoIn": [
+     "努力値振りの倉庫",
      "個別考察",
      "パーティ図鑑#15"
     ]
@@ -4002,7 +4563,14 @@ export const POKEDEX = [
     "item": "カゴのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 29.67,
+   "win": 47.41
+  },
+  "usage2026": 0.3168,
+  "topUsage2026": 0.2083
  },
  {
   "name": "スターミー",
@@ -4054,7 +4622,14 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "C",
+   "usage": 3.58,
+   "win": 60.71
+  },
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "ストライク",
@@ -4088,7 +4663,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "スピアー",
@@ -4133,7 +4711,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "スリーパー",
@@ -4166,7 +4747,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ソーナンス",
@@ -4249,7 +4833,14 @@ export const POKEDEX = [
     "nature": "ずぶとい",
     "ability": "かげふみ"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 19.18,
+   "win": 53.33
+  },
+  "usage2026": 0.198,
+  "topUsage2026": 0.375
  },
  {
   "name": "ソルロック",
@@ -4283,7 +4874,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ダーテング",
@@ -4318,7 +4912,10 @@ export const POKEDEX = [
     "item": "ヤタピのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ダグトリオ",
@@ -4363,7 +4960,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "チャーレム",
@@ -4430,7 +5030,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "チリーン",
@@ -4463,7 +5066,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "チルタリス",
@@ -4497,7 +5103,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ツチニン",
@@ -4519,7 +5128,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ツボツボ",
@@ -4553,7 +5165,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "テッカニン",
@@ -4606,7 +5221,10 @@ export const POKEDEX = [
     "item": "チイラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "デリバード",
@@ -4642,7 +5260,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "ability": "はりきり）"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "デンリュウ",
@@ -4676,7 +5297,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "note": "リフレクターはいやしのすずも候補"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "ドードリオ",
@@ -4711,7 +5335,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ドーブル",
@@ -4732,7 +5359,10 @@ export const POKEDEX = [
   "tier": "B",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ドククラゲ",
@@ -4767,7 +5397,10 @@ export const POKEDEX = [
     "item": "",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ドクケイル",
@@ -4801,7 +5434,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "トゲチック",
@@ -4836,7 +5472,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "トドゼルガ",
@@ -4914,7 +5553,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "トロピウス",
@@ -4948,7 +5590,10 @@ export const POKEDEX = [
     "item": "おうじゃのしるし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ドンファン",
@@ -4981,7 +5626,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ナックラー",
@@ -5015,7 +5663,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ナッシー",
@@ -5050,7 +5701,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "note": "ギガドレインはだいばくはつも候補"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ナマズン",
@@ -5084,7 +5738,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ニドキング",
@@ -5118,7 +5775,10 @@ export const POKEDEX = [
     "item": "",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ニドクイン",
@@ -5163,7 +5823,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ニューラ",
@@ -5198,7 +5861,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ニョロゾ",
@@ -5220,7 +5886,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ニョロトノ",
@@ -5254,7 +5923,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ニョロボン",
@@ -5301,7 +5973,14 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "D",
+   "usage": 1.41,
+   "win": 63.64
+  },
+  "usage2026": 0.0198,
+  "topUsage2026": 0.0417
  },
  {
   "name": "ヌオー",
@@ -5329,13 +6008,14 @@ export const POKEDEX = [
     "label": "型1",
     "moves": [
      "じしん",
-     "いわなだれ",
+     "めざめるパワー岩",
      "のろい",
      "ねむる"
     ],
     "item": "カゴのみ",
     "source": "個別考察",
-    "ability": "どちらでも"
+    "ability": "どちらでも",
+    "note": "正誤表によりいわなだれ→めざめるパワー岩"
    },
    {
     "label": "型2",
@@ -5349,7 +6029,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "ability": "しめりけ"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヌケニン",
@@ -5383,7 +6066,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ネイティオ",
@@ -5406,7 +6092,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ネンドール",
@@ -5440,7 +6129,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ノクタス",
@@ -5474,7 +6166,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ノコッチ",
@@ -5508,7 +6203,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ノズパス",
@@ -5542,7 +6240,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "パールル",
@@ -5575,7 +6276,10 @@ export const POKEDEX = [
     "item": "しんかいのキバ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハガネール",
@@ -5599,6 +6303,21 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『いじっぱり』HA振り",
   "sets": [
+   {
+    "label": "テンプレ",
+    "moves": [
+     "じしん",
+     "いわなだれ",
+     "ほえる",
+     "だいばくはつ"
+    ],
+    "item": "たべのこし",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "がんじょう",
+    "stats": "182-121-221-*-112-51",
+    "evs": "252-36-4-0-212-4"
+   },
    {
     "label": "型1",
     "moves": [
@@ -5645,7 +6364,14 @@ export const POKEDEX = [
     "nature": "いじっぱり",
     "ability": "がんじょう"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "C",
+   "usage": 6.78,
+   "win": 47.17
+  },
+  "usage2026": 0.0396,
+  "topUsage2026": 0
  },
  {
   "name": "バクーダ",
@@ -5697,7 +6423,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "バクオング",
@@ -5741,7 +6470,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "バクフーン",
@@ -5774,7 +6506,10 @@ export const POKEDEX = [
     "item": "ヤタピのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハクリュー",
@@ -5807,7 +6542,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "バシャーモ",
@@ -5830,6 +6568,25 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『むじゃき／せっかち』CSorAS振り",
   "sets": [
+   {
+    "label": "みがきし",
+    "moves": [
+     "きしかいせい",
+     "みがわり",
+     "きあいパンチ",
+     "オーバーヒート"
+    ],
+    "item": "カムラのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "むじゃき",
+    "ability": "もうか",
+    "stats": "155-172-90-131-81-145",
+    "evs": "0-252-0-4-0-252",
+    "alsoIn": [
+     "マイン氏の構築記事（2025）",
+     "パーティ図鑑#10"
+    ]
+   },
    {
     "label": "『みがわり』+『きしかいせい』",
     "moves": [
@@ -5870,21 +6627,15 @@ export const POKEDEX = [
     ],
     "item": "ヤタピのみ",
     "source": "個別考察"
-   },
-   {
-    "label": "構築#10採用型",
-    "moves": [
-     "きしかいせい",
-     "みがわり",
-     "きあいパンチ",
-     "オーバーヒート"
-    ],
-    "item": "カムラのみ",
-    "source": "パーティ図鑑#10",
-    "nature": "やんちゃ",
-    "ability": "もうか"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 15.09,
+   "win": 53.39
+  },
+  "usage2026": 0.1386,
+  "topUsage2026": 0.125
  },
  {
   "name": "バタフリー",
@@ -5918,7 +6669,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハッサム",
@@ -5963,7 +6717,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "パッチール",
@@ -5996,7 +6753,10 @@ export const POKEDEX = [
     "item": "スターのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハピナス",
@@ -6019,6 +6779,41 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『おくびょう』BS振り",
   "sets": [
+   {
+    "label": "瞑想",
+    "moves": [
+     "れいとうビーム",
+     "１０まんボルト",
+     "タマゴうみ",
+     "めいそう"
+    ],
+    "item": "せんせいのツメ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ひかえめ",
+    "ability": "てんのめぐみ",
+    "stats": "330-*-61-121-155-94",
+    "evs": "0-0-244-116-0-148",
+    "alsoIn": [
+     "努力値振りの倉庫",
+     "パーティ図鑑#09",
+     "パーティ図鑑#16"
+    ]
+   },
+   {
+    "label": "いばみが",
+    "moves": [
+     "ちきゅうなげ",
+     "タマゴうみ",
+     "いばる",
+     "みがわり"
+    ],
+    "item": "たべのこし",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "おだやか",
+    "ability": "しぜんかいふく",
+    "stats": "338-*-62-*-177-94",
+    "evs": "60-0-252-0-44-148"
+   },
    {
     "label": "『いばる』+『みがわり』",
     "moves": [
@@ -6057,23 +6852,6 @@ export const POKEDEX = [
     ]
    },
    {
-    "label": "『めいそう』",
-    "moves": [
-     "１０まんボルト",
-     "れいとうビーム",
-     "めいそう",
-     "タマゴうみ"
-    ],
-    "item": "せんせいのツメ",
-    "source": "努力値振りの倉庫",
-    "nature": "ひかえめ",
-    "alsoIn": [
-     "パーティ図鑑#09",
-     "パーティ図鑑#16"
-    ],
-    "ability": "てんのめぐみ"
-   },
-   {
     "label": "『てんのめぐみ』『みずのはどう』",
     "moves": [
      "みずのはどう",
@@ -6099,7 +6877,14 @@ export const POKEDEX = [
     "item": "ピントレンズ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 17.26,
+   "win": 54.07
+  },
+  "usage2026": 0.1386,
+  "topUsage2026": 0.0417
  },
  {
   "name": "ハブネーク",
@@ -6132,7 +6917,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "パラセクト",
@@ -6166,7 +6954,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハリーセン",
@@ -6202,7 +6993,10 @@ export const POKEDEX = [
     "source": "個別考察",
     "ability": "すいすい"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハリテヤマ",
@@ -6247,7 +7041,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "バリヤード",
@@ -6280,7 +7077,10 @@ export const POKEDEX = [
     "item": "",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "パルシェン",
@@ -6314,7 +7114,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "バルビート",
@@ -6348,7 +7151,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "バンギラス",
@@ -6370,7 +7176,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": true,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ハンテール",
@@ -6403,7 +7212,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ピカチュウ",
@@ -6436,7 +7248,10 @@ export const POKEDEX = [
     "item": "でんきだま",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "ピクシー",
@@ -6469,7 +7284,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ピジョット",
@@ -6503,7 +7321,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヒンバス",
@@ -6524,7 +7345,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ファイヤー",
@@ -6580,7 +7404,14 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "D",
+   "usage": 2.94,
+   "win": 43.48
+  },
+  "usage2026": 0.0396,
+  "topUsage2026": 0
  },
  {
   "name": "ブースター",
@@ -6613,7 +7444,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "フーディン",
@@ -6658,7 +7492,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ブーバー",
@@ -6691,7 +7528,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ブーピッグ",
@@ -6725,7 +7565,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "フォレトス",
@@ -6805,7 +7648,10 @@ export const POKEDEX = [
     "nature": "わんぱく",
     "ability": "がんじょう"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "プクリン",
@@ -6838,7 +7684,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "フシギバナ",
@@ -6903,7 +7752,10 @@ export const POKEDEX = [
     "item": "クラボのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "プテラ",
@@ -6927,6 +7779,36 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『ようき』BS振り",
   "sets": [
+   {
+    "label": "いばみがチイラ",
+    "moves": [
+     "いわなだれ",
+     "じしん",
+     "いばる",
+     "みがわり"
+    ],
+    "item": "チイラのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ようき",
+    "ability": "プレッシャー",
+    "stats": "155-157-85-*-96-200",
+    "evs": "0-252-0-0-4-252"
+   },
+   {
+    "label": "鉢巻",
+    "moves": [
+     "いわなだれ",
+     "じしん",
+     "つばめがえし",
+     "ねごと"
+    ],
+    "item": "こだわりハチマキ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ようき",
+    "ability": "いしあたま",
+    "stats": "161-152-85-*-95-200",
+    "evs": "44-212-0-0-0-252"
+   },
    {
     "label": "『こだわりハチマキ』",
     "moves": [
@@ -6976,7 +7858,14 @@ export const POKEDEX = [
     "nature": "ようき",
     "ability": "プレッシャー"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 18.29,
+   "win": 59.44
+  },
+  "usage2026": 0.2079,
+  "topUsage2026": 0.4167
  },
  {
   "name": "フライゴン",
@@ -7010,7 +7899,10 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "プラスル",
@@ -7043,7 +7935,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ブラッキー",
@@ -7076,7 +7971,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "フリーザー",
@@ -7110,7 +8008,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ベトベトン",
@@ -7155,7 +8056,10 @@ export const POKEDEX = [
     "item": "カゴのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヘラクロス",
@@ -7180,6 +8084,26 @@ export const POKEDEX = [
   "spread": "『いじっぱり』AS振り",
   "sets": [
    {
+    "label": "耐久振り鉢巻",
+    "moves": [
+     "かわらわり",
+     "メガホーン",
+     "いわなだれ",
+     "めざめるパワー霊"
+    ],
+    "item": "こだわりハチマキ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "こんじょう",
+    "stats": "187-187-95-*-115-113",
+    "evs": "252-196-0-0-0-60",
+    "alsoIn": [
+     "努力値振りの倉庫",
+     "個別考察",
+     "パーティ図鑑#15"
+    ]
+   },
+   {
     "label": "『きしかいせい』",
     "moves": [
      "メガホーン",
@@ -7196,25 +8120,6 @@ export const POKEDEX = [
     "alsoIn": [
      "個別考察",
      "パーティ図鑑#01"
-    ]
-   },
-   {
-    "label": "『こだわりハチマキ』",
-    "moves": [
-     "メガホーン",
-     "かわらわり",
-     "いわなだれ",
-     "めざめるパワー霊"
-    ],
-    "item": "こだわりハチマキ",
-    "source": "努力値振りの倉庫",
-    "nature": "いじっぱり",
-    "ability": "こんじょう",
-    "stats": "156-194-95-*-115-137",
-    "evs": "4-252-0-0-0-252",
-    "alsoIn": [
-     "個別考察",
-     "パーティ図鑑#15"
     ]
    },
    {
@@ -7257,7 +8162,14 @@ export const POKEDEX = [
     "nature": "ようき",
     "ability": "こんじょう"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "S",
+   "usage": 36.32,
+   "win": 47.18
+  },
+  "usage2026": 0.396,
+  "topUsage2026": 0.4167
  },
  {
   "name": "ペリッパー",
@@ -7291,7 +8203,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヘルガー",
@@ -7348,7 +8263,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0198,
+  "topUsage2026": 0.0417
  },
  {
   "name": "ペルシアン",
@@ -7381,7 +8299,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ベロリンガ",
@@ -7415,7 +8336,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ホエルオー",
@@ -7449,7 +8373,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ボーマンダ",
@@ -7472,6 +8399,21 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『いじっぱり』AS振り",
   "sets": [
+   {
+    "label": "竜舞",
+    "moves": [
+     "めざめるパワー飛",
+     "いわなだれ",
+     "りゅうのまい",
+     "じしん"
+    ],
+    "item": "ラムのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "いかく",
+    "stats": "171-182-101-*-121-152",
+    "evs": "4-248-0-0-0-252"
+   },
    {
     "label": "耐久振り『りゅうのまい』",
     "moves": [
@@ -7543,7 +8485,14 @@ export const POKEDEX = [
     "nature": "ようき",
     "ability": "いかく"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 21.61,
+   "win": 50.3
+  },
+  "usage2026": 0.2079,
+  "topUsage2026": 0.2083
  },
  {
   "name": "ボスゴドラ",
@@ -7590,7 +8539,32 @@ export const POKEDEX = [
     "item": "こだわりハチマキ",
     "source": "個別考察",
     "ability": "いしあたま"
-   },
+   }
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
+ },
+ {
+  "name": "ポリゴン2",
+  "types": [
+   "normal"
+  ],
+  "base": [
+   85,
+   80,
+   90,
+   105,
+   95,
+   60
+  ],
+  "abilities": [
+   "トレース"
+  ],
+  "tier": "C",
+  "banned": false,
+  "spread": "",
+  "sets": [
    {
     "label": "ありうる型",
     "moves": [
@@ -7602,7 +8576,10 @@ export const POKEDEX = [
     "item": "",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "ポワルン",
@@ -7646,7 +8623,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マイナン",
@@ -7679,7 +8659,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マグカルゴ",
@@ -7714,7 +8697,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マタドガス",
@@ -7764,7 +8750,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マッスグマ",
@@ -7797,7 +8786,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マリルリ",
@@ -7831,7 +8823,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マルノーム",
@@ -7865,7 +8860,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "マルマイン",
@@ -7910,7 +8908,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0198,
+  "topUsage2026": 0.0417
  },
  {
   "name": "マンタイン",
@@ -7945,7 +8946,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ミルタンク",
@@ -7989,7 +8993,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ミロカロス",
@@ -8074,7 +9081,10 @@ export const POKEDEX = [
     "nature": "ずぶとい",
     "ability": "ふしぎなうろこ"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "ムウマ",
@@ -8107,7 +9117,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "メガニウム",
@@ -8140,7 +9153,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "メタグロス",
@@ -8164,7 +9180,43 @@ export const POKEDEX = [
   "spread": "",
   "sets": [
    {
-    "label": "『こだわりハチマキ』",
+    "label": "耐久振り（HD）",
+    "moves": [
+     "コメットパンチ",
+     "じしん",
+     "だいばくはつ",
+     "いわなだれ"
+    ],
+    "item": "せんせいのツメ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "クリアボディ",
+    "stats": "187-176-151-*-133-95",
+    "evs": "252-36-4-0-180-36",
+    "alsoIn": [
+     "パーティ図鑑#13"
+    ]
+   },
+   {
+    "label": "ミラー重視（最速）",
+    "moves": [
+     "コメットパンチ",
+     "じしん",
+     "だいばくはつ",
+     "リフレクター"
+    ],
+    "item": "オボンのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ようき",
+    "ability": "クリアボディ",
+    "stats": "155-187-150-*-111-134",
+    "evs": "0-252-0-0-4-252",
+    "alsoIn": [
+     "努力値振りの倉庫"
+    ]
+   },
+   {
+    "label": "HA鉢巻",
     "moves": [
      "コメットパンチ",
      "じしん",
@@ -8172,12 +9224,13 @@ export const POKEDEX = [
      "だいばくはつ"
     ],
     "item": "こだわりハチマキ",
-    "source": "努力値振りの倉庫",
+    "source": "stoic氏の構築記事（2026）",
     "nature": "いじっぱり",
     "ability": "クリアボディ",
-    "stats": "175-198-152-*-111-108",
-    "evs": "156-196-12-0-4-140",
+    "stats": "184-205-150-*-110-94",
+    "evs": "228-252-0-0-0-28",
     "alsoIn": [
+     "努力値振りの倉庫",
      "努力値振りの倉庫",
      "パーティ図鑑#03",
      "パーティ図鑑#06",
@@ -8185,6 +9238,21 @@ export const POKEDEX = [
      "パーティ図鑑#08",
      "パーティ図鑑#12"
     ]
+   },
+   {
+    "label": "プンキネ（HC）",
+    "moves": [
+     "サイコキネシス",
+     "コメットパンチ",
+     "じしん",
+     "だいばくはつ"
+    ],
+    "item": "まがったスプーン",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ひかえめ",
+    "ability": "クリアボディ",
+    "stats": "181-139-150-161-110-97",
+    "evs": "204-0-0-252-0-52"
    },
    {
     "label": "『リフレクター』",
@@ -8203,21 +9271,6 @@ export const POKEDEX = [
     "alsoIn": [
      "パーティ図鑑#16"
     ]
-   },
-   {
-    "label": "最速『リフレクター』",
-    "moves": [
-     "コメットパンチ",
-     "じしん",
-     "リフレクター",
-     "だいばくはつ"
-    ],
-    "item": "オボンのみ",
-    "source": "努力値振りの倉庫",
-    "nature": "ようき",
-    "ability": "クリアボディ",
-    "stats": "156-186-151-103-111-134",
-    "evs": "4-244-4-0-4-252"
    },
    {
     "label": "耐久振り",
@@ -8251,21 +9304,15 @@ export const POKEDEX = [
     "alsoIn": [
      "パーティ図鑑#05"
     ]
-   },
-   {
-    "label": "構築#13採用型",
-    "moves": [
-     "コメットパンチ",
-     "じしん",
-     "いわなだれ",
-     "だいばくはつ"
-    ],
-    "item": "せんせいのツメ",
-    "source": "パーティ図鑑#13",
-    "nature": "いじっぱり",
-    "ability": "クリアボディ"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "S+",
+   "usage": 78.64,
+   "win": 50.24
+  },
+  "usage2026": 0.802,
+  "topUsage2026": 0.7917
  },
  {
   "name": "メタモン",
@@ -8295,7 +9342,10 @@ export const POKEDEX = [
     "item": "かわらずのいし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "モルフォン",
@@ -8329,7 +9379,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "モンジャラ",
@@ -8362,7 +9415,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヤドキング",
@@ -8397,7 +9453,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヤドラン",
@@ -8443,7 +9502,14 @@ export const POKEDEX = [
     "item": "カゴのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "D",
+   "usage": 2.05,
+   "win": 50.0
+  },
+  "usage2026": 0.0198,
+  "topUsage2026": 0
  },
  {
   "name": "ヤミカラス",
@@ -8477,7 +9543,10 @@ export const POKEDEX = [
     "item": "きあいのハチマキ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヤミラミ",
@@ -8499,7 +9568,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヤルキモノ",
@@ -8543,7 +9615,10 @@ export const POKEDEX = [
     "item": "ラムのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヤンヤンマ",
@@ -8578,7 +9653,10 @@ export const POKEDEX = [
     "item": "チイラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ユレイドル",
@@ -8612,7 +9690,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヨマワル",
@@ -8633,7 +9714,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ヨルノズク",
@@ -8656,7 +9740,10 @@ export const POKEDEX = [
   "tier": "C",
   "banned": false,
   "spread": "",
-  "sets": []
+  "sets": [],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ライコウ",
@@ -8678,6 +9765,21 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『おくびょう』調整振り",
   "sets": [
+   {
+    "label": "瞑想",
+    "moves": [
+     "１０まんボルト",
+     "めざめるパワー氷",
+     "めいそう",
+     "ねむる"
+    ],
+    "item": "カゴのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "おくびょう",
+    "ability": "プレッシャー",
+    "stats": "166-*-111-151-120-183",
+    "evs": "4-0-128-124-0-252"
+   },
    {
     "label": "『めいそう』『リフレクター』",
     "moves": [
@@ -8756,7 +9858,14 @@ export const POKEDEX = [
     "nature": "おくびょう",
     "ability": "プレッシャー"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "B",
+   "usage": 14.07,
+   "win": 50.0
+  },
+  "usage2026": 0.1089,
+  "topUsage2026": 0.125
  },
  {
   "name": "ライチュウ",
@@ -8789,7 +9898,10 @@ export const POKEDEX = [
     "item": "ひかりのこな",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ライボルト",
@@ -8823,7 +9935,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ラグラージ",
@@ -8846,6 +9961,39 @@ export const POKEDEX = [
   "banned": false,
   "spread": "『おくびょう』CS振り、『やんちゃ』AS振り",
   "sets": [
+   {
+    "label": "CS身代わり我武者羅",
+    "moves": [
+     "ハイドロポンプ",
+     "れいとうビーム",
+     "がむしゃら",
+     "みがわり"
+    ],
+    "item": "カムラのみ",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "おくびょう",
+    "ability": "げきりゅう",
+    "stats": "175-*-111-137-110-123",
+    "evs": "0-0-4-252-0-252",
+    "alsoIn": [
+     "個別考察"
+    ]
+   },
+   {
+    "label": "鉢巻（ばくれつパンチ）",
+    "moves": [
+     "じしん",
+     "いわなだれ",
+     "ばくれつパンチ",
+     "めざめるパワー霊"
+    ],
+    "item": "こだわりハチマキ",
+    "source": "マイン氏の構築記事（2025）",
+    "nature": "いじっぱり",
+    "ability": "げきりゅう",
+    "stats": "183-176-110-*-110-107",
+    "evs": "60-236-0-0-0-212"
+   },
    {
     "label": "『こだわりハチマキ』",
     "moves": [
@@ -8932,17 +10080,6 @@ export const POKEDEX = [
     ]
    },
    {
-    "label": "型1",
-    "moves": [
-     "ハイドロポンプ",
-     "れいとうビーム",
-     "みがわり",
-     "がむしゃら"
-    ],
-    "item": "カムラのみ",
-    "source": "個別考察"
-   },
-   {
     "label": "型2",
     "moves": [
      "じしん",
@@ -8958,7 +10095,14 @@ export const POKEDEX = [
     "nature": "やんちゃ",
     "ability": "げきりゅう"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "A",
+   "usage": 23.53,
+   "win": 50.0
+  },
+  "usage2026": 0.1386,
+  "topUsage2026": 0.2083
  },
  {
   "name": "ラッタ",
@@ -8992,7 +10136,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ラティアス",
@@ -9015,6 +10162,21 @@ export const POKEDEX = [
   "banned": false,
   "spread": "",
   "sets": [
+   {
+    "label": "スプーン",
+    "moves": [
+     "サイコキネシス",
+     "１０まんボルト",
+     "ドラゴンクロー",
+     "でんじは"
+    ],
+    "item": "まがったスプーン",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "おくびょう",
+    "ability": "ふゆう",
+    "stats": "155-*-111-162-150-178",
+    "evs": "0-0-4-252-0-252"
+   },
    {
     "label": "『リフレクター』+『めいそう』型",
     "moves": [
@@ -9093,7 +10255,14 @@ export const POKEDEX = [
     "stats": "187-*-111-130-150-178",
     "evs": "252-0-4-0-0-252"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "C",
+   "usage": 7.54,
+   "win": 54.24
+  },
+  "usage2026": 0.0891,
+  "topUsage2026": 0.0417
  },
  {
   "name": "ラティオス",
@@ -9116,6 +10285,36 @@ export const POKEDEX = [
   "banned": false,
   "spread": "",
   "sets": [
+   {
+    "label": "スプーン",
+    "moves": [
+     "サイコキネシス",
+     "めざめるパワー炎",
+     "ドラゴンクロー",
+     "めいそう"
+    ],
+    "item": "まがったスプーン",
+    "source": "すのーあのりす氏の記事（2025）",
+    "nature": "ひかえめ",
+    "ability": "ふゆう",
+    "stats": "155-*-101-199-132-161",
+    "evs": "0-0-4-248-12-248"
+   },
+   {
+    "label": "ヤタピ身代わり",
+    "moves": [
+     "サイコキネシス",
+     "れいとうビーム",
+     "めざめるパワー炎",
+     "みがわり"
+    ],
+    "item": "ヤタピのみ",
+    "source": "stoic氏の構築記事（2026）",
+    "nature": "ひかえめ",
+    "ability": "ふゆう",
+    "stats": "156-*-100-199-130-161",
+    "evs": "4-0-0-244-0-244"
+   },
    {
     "label": "『なみのり』",
     "moves": [
@@ -9222,7 +10421,14 @@ export const POKEDEX = [
     "nature": "ひかえめ",
     "ability": "ふゆう"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "S",
+   "usage": 41.56,
+   "win": 50.77
+  },
+  "usage2026": 0.3564,
+  "topUsage2026": 0.375
  },
  {
   "name": "ラブカス",
@@ -9255,7 +10461,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ラプラス",
@@ -9312,7 +10521,10 @@ export const POKEDEX = [
     "item": "せんせいのツメ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "ラフレシア",
@@ -9346,7 +10558,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ランターン",
@@ -9381,7 +10596,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "リザードン",
@@ -9426,7 +10644,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0099,
+  "topUsage2026": 0
  },
  {
   "name": "リングマ",
@@ -9470,7 +10691,10 @@ export const POKEDEX = [
     "item": "ピントレンズ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ルージュラ",
@@ -9504,7 +10728,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ルナトーン",
@@ -9538,7 +10765,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ルンパッパ",
@@ -9612,7 +10842,14 @@ export const POKEDEX = [
     "source": "個別考察",
     "ability": "すいすい"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "D",
+   "usage": 3.96,
+   "win": 54.84
+  },
+  "usage2026": 0.0495,
+  "topUsage2026": 0.0417
  },
  {
   "name": "レアコイル",
@@ -9669,7 +10906,10 @@ export const POKEDEX = [
     "item": "オボンのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "レジアイス",
@@ -9721,7 +10961,10 @@ export const POKEDEX = [
     "item": "ピントレンズ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0.0693,
+  "topUsage2026": 0.0417
  },
  {
   "name": "レジスチル",
@@ -9776,7 +11019,10 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "レジロック",
@@ -9845,7 +11091,14 @@ export const POKEDEX = [
     "item": "たべのこし",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": {
+   "rank": "C",
+   "usage": 3.96,
+   "win": 61.29
+  },
+  "usage2026": 0.0693,
+  "topUsage2026": 0.0833
  },
  {
   "name": "レディアン",
@@ -9880,7 +11133,10 @@ export const POKEDEX = [
     "item": "カムラのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ロゼリア",
@@ -9915,7 +11171,10 @@ export const POKEDEX = [
     "item": "",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  },
  {
   "name": "ワタッコ",
@@ -9960,6 +11219,9 @@ export const POKEDEX = [
     "item": "クラボのみ",
     "source": "個別考察"
    }
-  ]
+  ],
+  "rank2026": null,
+  "usage2026": 0,
+  "topUsage2026": 0
  }
 ];
