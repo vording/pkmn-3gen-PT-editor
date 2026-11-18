@@ -166,7 +166,13 @@ export function matchup(a, b) {
   const speedB = b.stats[5];
   const aFirst = speedA > speedB ? 0.5 : speedA < speedB ? -0.5 : 0;
   let margin = tB - tA + aFirst;
-  margin += (statusEdge(a, b) - statusEdge(b, a)) * 2;
+  // 『なまけ』持ちは動けないターンに状態異常・積み・身代わりを通されやすい
+  const edgeA = statusEdge(a, b) * (b.ability === 'なまけ' ? 2 : 1);
+  const edgeB = statusEdge(b, a) * (a.ability === 'なまけ' ? 2 : 1);
+  margin += (edgeA - edgeB) * 2;
+  // 相手を倒しても次のターンは動けないため、後続に無償で行動される（1対1の評価に出ない損）
+  if (a.ability === 'なまけ') margin -= 1.2;
+  if (b.ability === 'なまけ') margin += 1.2;
   // 『だいばくはつ』『じばく』で倒せる／『みちづれ』を持つなら、不利でも1:1交換に持ち込める
   const tradeA = bestAttack(a, b, { explosion: true }).frac >= 1 || (a.tags.explode && a.set.moves.includes('みちづれ') && !b.types.includes('ghost'));
   const tradeB = bestAttack(b, a, { explosion: true }).frac >= 1 || (b.tags.explode && b.set.moves.includes('みちづれ') && !a.types.includes('ghost'));
