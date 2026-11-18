@@ -60,11 +60,12 @@ function renderPicker() {
   search.addEventListener('input', () => { state.query = search.value; updateGrid(); });
   const typeSel = h('select', { 'aria-label': 'タイプで絞り込み' }, `<option value="">すべてのタイプ</option>${TYPES.map((t) => `<option value="${t}" ${state.type === t ? 'selected' : ''}>${TYPE_NAMES[t]}</option>`).join('')}`);
   typeSel.addEventListener('change', () => { state.type = typeSel.value; updateGrid(); });
-  const tierSel = h('select', { 'aria-label': 'ランクで絞り込み' }, `<option value="">すべてのランク</option>${TIER_ORDER.map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>${t.startsWith('P') ? `考察本 ${TIER_LABEL[t]}` : `環境ランク ${TIER_LABEL[t]}`}</option>`).join('')}`);
+  const tierSel = h('select', { 'aria-label': 'ランクで絞り込み' }, `<option value="">すべてのランク</option>${TIER_ORDER.map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>${t.startsWith('P') ? `考察本の重要度 ${TIER_LABEL[t]}` : `環境ランク ${TIER_LABEL[t]}`}</option>`).join('')}`);
   tierSel.addEventListener('change', () => { state.tier = tierSel.value; updateGrid(); });
   controls.append(search, typeSel, tierSel);
+  const legend = h('p', { class: 'legend muted small' }, 'バッジの見方：S+〜D＝2025〜26年の大会の使用率・勝率によるランク／☆☆☆・☆☆・☆＝ランク外のポケモンの考察本での重要度（☆が多いほど重要）');
   const grid = h('div', { class: 'grid' });
-  sec.append(controls, grid);
+  sec.append(controls, legend, grid);
   function updateGrid() {
     const q = kata(state.query.trim());
     const list = USABLE.filter((m) => (!q || m.name.includes(q)) && (!state.type || m.types.includes(state.type)) && (!state.tier || m.meta === state.tier));
@@ -120,7 +121,7 @@ function renderLocked() {
     sec.append(row);
   }
   const opts = h('div', { class: 'opts' });
-  const minor = h('label', {}, `<input type="checkbox" ${state.includeMinor ? 'checked' : ''}> 重要度☆のポケモンも候補に入れる`);
+  const minor = h('label', {}, `<input type="checkbox" ${state.includeMinor ? 'checked' : ''}> マイナーなポケモン（考察本の重要度☆）も候補に入れる`);
   minor.querySelector('input').addEventListener('change', (e) => { state.includeMinor = e.target.checked; });
   const lati = h('label', {}, `<input type="checkbox" ${state.allowLati ? '' : 'checked'}> ラティアス・ラティオス禁止ルール`);
   lati.querySelector('input').addEventListener('change', (e) => { state.allowLati = !e.target.checked; });

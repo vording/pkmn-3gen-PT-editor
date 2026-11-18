@@ -170,3 +170,5 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
   .member, .panel { padding: 10px; }
   .tabs button { flex: 1 1 100%; }
 }
+
+.legend { margin: -4px 0 8px; }
