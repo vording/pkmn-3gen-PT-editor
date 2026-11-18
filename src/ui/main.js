@@ -295,13 +295,19 @@ function renderPlan(r) {
   const plan = gamePlan(r);
   const el = h('div', { class: 'panel wide plan' });
   el.innerHTML = `<h3>戦い方</h3>
+    <p class="adj-h">構築タイプ：${esc(plan.archetype.name)}</p><p>${esc(plan.archetype.text)}</p>
     <p class="adj-h">勝ち筋</p><ul>${plan.concept.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+    ${plan.combos.length ? `<p class="adj-h">パーティ内の有名な組み合わせ</p><ul>${plan.combos.map((c) => `<li><b>${esc(c.name)}</b>：${esc(c.text)}</li>`).join('')}</ul>` : ''}
+    ${plan.paraPlans.length ? `<p class="adj-h">麻痺（でんじは）の使い方</p><ul>${plan.paraPlans.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
     <p class="adj-h">基本の選出と先発</p>
     <p>先発 <b>${esc(plan.lead.name)}</b>（${esc(plan.lead.why)}）、後ろに ${plan.lead.back.map(esc).join('・')}</p>
     <p class="adj-h">各ポケモンの動かし方</p>
     <dl class="per">${plan.perMember.map((p) => `<dt>${esc(p.name)}</dt><dd>${p.lines.map(esc).join('<br>')}</dd>`).join('')}</dl>
     <p class="adj-h">相手のポケモン別（使用率の高い順）</p>
     <ul class="vs">${plan.vs.map((v) => `<li><b>${esc(v.name)}</b> → ${esc(v.best)}で対応（${esc(v.tone)}）</li>`).join('')}</ul>
+    <p class="adj-h">枠のチェック</p>
+    <ul class="slots">${plan.slots.map((x) => `<li class="${x.who.length ? 'ok' : 'ng'}">${x.who.length ? '✓' : '✗'} ${esc(x.label)}${x.who.length ? `：${x.who.map(esc).join('・')}` : '：いない'}</li>`).join('')}
+      <li class="${plan.anti.length ? 'ok' : 'ng'}">${plan.anti.length ? '✓' : '✗'} 身代わり展開・バトンへの対策${plan.anti.length ? `：${plan.anti.map((a) => `${esc(a.name)}（${a.tools.map(esc).join('・')}）`).join('、')}` : '：いない（吠える・大爆発・せんせいのツメ・連続技・アンコールなど）'}</li></ul>
     ${plan.weak.length ? `<p class="adj-h">苦手な相手</p><ul>${plan.weak.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
     ${plan.notes.length ? `<p class="adj-h">ルール上の注意</p><ul>${plan.notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
     <p class="muted small">役割・技構成と対面評価から自動で作った目安です。</p>`;

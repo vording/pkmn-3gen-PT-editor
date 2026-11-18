@@ -1,6 +1,7 @@
 // 提案パーティの「調整の目安」と「戦い方」を、計算とルールから文章にする
 import { damageRolls, koChance } from './matchup.js';
-import { getThreats } from './recommend.js';
+import { getThreats, STRUCTURE_SLOTS } from './recommend.js';
+import { findCombos, classifyArchetype, ARCHETYPES, antiComboTools } from '../data/strategy.js';
 
 const EXPLOSION = new Set(['じばく', 'だいばくはつ']);
 
@@ -190,6 +191,25 @@ export function gamePlan(result) {
     return `${t.name}：${best.name}が一番まし（${t.bestScore > -0.15 ? '五分' : '不利'}）。${tip}`;
   });
 
+  // 構築タイプ・コンボ・枠
+  const archetype = classifyArchetype(members);
+  const combos = findCombos(members);
+  const slots = STRUCTURE_SLOTS.map((slot) => ({ label: slot.label, who: members.filter(slot.test).map((m) => m.name) }));
+
+  // 身代わり展開・バトンへの対策
+  const anti = members.map((m) => ({ name: m.name, tools: antiComboTools(m) })).filter((x) => x.tools.length);
+
+  // 麻痺撒きの作戦（stoic氏「GBA麻痺撒き戦術まとめ」の4分類）
+  const paraPlans = [];
+  if (paras.length) {
+    const subAces = members.filter((m) => m.tags.sub && (m.tags.flail || m.tags.endeavor || m.tags.confuse || m.tags.setupPhys || m.tags.setupSpec) && !paras.includes(m));
+    const slowHitters = members.filter((m) => !paras.includes(m) && m.stats[5] < 110 && (m.item === 'こだわりハチマキ' || m.item === 'ふといホネ' || m.tags.setupPhys || m.stats[1] >= 170 || m.stats[3] >= 170));
+    if (subAces.length) paraPlans.push(`身代わり連打の強化：麻痺で相手が痺れたターンに${list(subAces)}の身代わりが残り、積みや攻撃の猶予ができる（身代わり3回でようやく五分くらいなので過信しない）`);
+    if (slowHitters.length) paraPlans.push(`鈍足アタッカーの補助：麻痺で素早さを1/4にして、${list(slowHitters)}が上から殴れるようにする（痺れに頼らない確実な作戦）`);
+    if (names.has('カビゴン')) paraPlans.push('カビゴン同士の対決を有利に：相手カビゴンに麻痺を入れてから自分のカビゴンを出すと、長い殴り合い・積み合いで有利');
+    if (walls.length) paraPlans.push(`受けの負担を減らす：麻痺した相手は動けないターンがあるので、${list(walls)}で受けきれる確率が上がる`);
+  }
+
   const notes = [];
   if (names.has('ソーナンス')) notes.push('相手の6体にもソーナンス（かげふみ）がいると、お互いソーナンスを選出できない');
   if (members.filter((m) => m.tags.sleep).length) notes.push('相手がすでに眠っている（ねむるを含む）ときは眠り技を使えない');
@@ -197,6 +217,11 @@ export function gamePlan(result) {
 
   return {
     concept,
+    archetype: { name: archetype, text: ARCHETYPES[archetype] },
+    combos: [...combos.trios, ...combos.pairs].map((c) => ({ name: c.name, text: c.text })),
+    slots,
+    anti,
+    paraPlans,
     notes,
     lead: { name: lead.name, why: leadWhy, back: sel.filter((n) => n !== lead.name) },
     perMember: members.map((m) => ({ name: m.name, lines: memberPlan(m) })),

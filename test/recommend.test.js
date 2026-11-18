@@ -74,7 +74,8 @@ test('提案：型を指定して固定できる・ラティ禁止ルール', ()
 });
 
 test('型の作成：記載がなければ努力値を推定する', () => {
-  const m = buildMember(DEX.get('アーボック'), 0);
+  const arbok = DEX.get('アーボック');
+  const m = buildMember(arbok, arbok.sets.findIndex((x) => !x.evs && !x.stats));
   assert.equal(m.evsEstimated, true);
   assert.equal(m.evs.reduce((a, b) => a + b, 0), 508);
 });
@@ -134,4 +135,17 @@ test('入れ替え候補：他の5体と種族・道具が重複しない候補�
   }
   const next = evaluateTeam(ms.map((m, i) => (i === idx ? alts[0].member : m)), [{ name: 'バシャーモ', setIndex: 0 }]);
   assert.equal(next.members[idx].member.name, alts[0].member.name);
+});
+
+test('構築知識：コンボは前提の技があるときだけ成立し、構築タイプを分類できる', async () => {
+  const { findCombos, classifyArchetype } = await import('../src/data/strategy.js');
+  const snorlax = DEX.get('カビゴン');
+  const counterIdx = snorlax.sets.findIndex((s) => s.moves.includes('カウンター'));
+  const noCounterIdx = snorlax.sets.findIndex((s) => !s.moves.includes('カウンター'));
+  const blissey = memberOf('ハピナス', 0);
+  assert.ok(findCombos([memberOf('カビゴン', counterIdx), blissey]).pairs.some((c) => c.name === 'カビハピ'));
+  assert.ok(!findCombos([memberOf('カビゴン', noCounterIdx), blissey]).pairs.some((c) => c.name === 'カビハピ'));
+  const kgs = ['カビゴン', 'メタグロス', 'サンダー'].map((n) => memberOf(n, 0));
+  assert.equal(classifyArchetype(kgs), 'グロスサンダー');
+  assert.equal(classifyArchetype([...kgs, memberOf('スイクン', 0)]), '鋼水サンダー');
 });

@@ -8,6 +8,15 @@ import { TYPES, TYPE_NAMES as TYPE_JP } from '../data/types.js';
 import { BANNED, BANNED_ITEMS } from '../data/rules.js';
 import { buildMember, roleLabels } from './model.js';
 import { matchup, defensiveMultiplier } from './matchup.js';
+import { findCombos, antiComboTools } from '../data/strategy.js';
+
+// 上位入賞構築に共通する枠（stoic氏「上位入賞66構築の分類」より）
+export const STRUCTURE_SLOTS = [
+  { key: 'special', label: '特殊を数値で受ける枠（カビゴンなど）', penalty: 1.0, test: (m) => m.stats[0] * m.stats[4] >= 30000 },
+  { key: 'normal', label: 'ノーマル耐性（鋼・岩・ゴースト）か格闘の枠', penalty: 0.7, test: (m) => m.types.some((t) => ['steel', 'rock', 'ghost', 'fighting'].includes(t)) },
+  { key: 'steel', label: '鋼を半減し地面が等倍以下の枠（水・サンダーなど）', penalty: 0.7, test: (m) => defensiveMultiplier(m, 'steel') <= 0.5 && defensiveMultiplier(m, 'ground') <= 1 },
+  { key: 'fightground', label: '格闘か地面を半減以下で受ける枠', penalty: 0.5, test: (m) => defensiveMultiplier(m, 'fighting') <= 0.5 || defensiveMultiplier(m, 'ground') <= 0.5 },
+];
 
 // 環境ランク：2025/05〜2026/08 の大会成績にもとづくランク（stoic氏）があればそれを、なければ考察本の重要度を使う
 export const TIER_ORDER = ['S+', 'S', 'A', 'B', 'C', 'D', 'P3', 'P2', 'P1'];
@@ -155,9 +164,12 @@ export function scoreTeam(members, opts = {}) {
   let roles = 0;
   const has = (pred) => members.some(pred);
   if (members.length >= 4) {
-    // 考察本：6体のうち誰か1体には『ほえる』などの積み・バトン対策を持たせたい
-    if (!has((m) => m.tags.phaze || m.tags.encore || (m.tags.counter && m.tags.mirrorCoat))) roles -= 1.5;
-    if (!has((m) => m.stats[0] * m.stats[4] >= 36000)) roles -= 1.0; // 特殊の数値受け
+    // 身代わり展開・バトンへの対策（吠える・アンコール・大爆発・せんせいのツメ・連続技など）が1体はほしい
+    const anti = members.filter((m) => antiComboTools(m).length).length;
+    if (anti === 0) roles -= 1.5;
+    else if (anti === 1) roles -= 0.3;
+    // 上位構築の枠組み：対特殊／ノーマル耐性（鋼岩ゴースト）か格闘／鋼半減かつ地面等倍以下／格闘か地面の耐性
+    for (const slot of STRUCTURE_SLOTS) if (!has(slot.test)) roles -= slot.penalty;
     if (!has((m) => m.stats[5] >= 140)) roles -= 0.5;
   }
   const sleepers = members.filter((m) => m.tags.sleep).length;
@@ -174,6 +186,9 @@ export function scoreTeam(members, opts = {}) {
   for (const m of members) setPref += Math.max(0, 0.8 - 0.2 * m.setIndex);
 
   let synergy = 0;
+  // 明確なコンセプトのある組み合わせ（コンビネーション）
+  const combos = findCombos(members);
+  synergy += combos.pairs.length * 2.4 + combos.trios.length * 4;
   for (let i = 0; i < members.length; i++) {
     for (let j = i + 1; j < members.length; j++) synergy += pairScore(members[i].name, members[j].name);
   }

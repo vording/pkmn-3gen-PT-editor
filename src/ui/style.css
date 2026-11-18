@@ -179,3 +179,6 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
 .alt-list .alt-body { min-width: 0; overflow-wrap: anywhere; }
 .alt-list .sprite.sm { margin: 0; }
 .alt-list button { grid-column: 1 / -1; margin: 4px 0 0; width: 100%; }
+.plan .slots { list-style: none; padding-left: 0; }
+.plan .slots .ok { color: var(--text); }
+.plan .slots .ng { color: var(--bad); font-weight: 600; }
