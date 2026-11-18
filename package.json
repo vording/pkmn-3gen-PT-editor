@@ -1,7 +1,7 @@
 {
   "name": "pokemon-3gen-simulator",
   "version": "0.2.0",
-  "description": "ポケモン第三世代（エメラルド）後期シングルのパーティ作成ツール",
+  "description": "ポケットモンスターエメラルド 後期シングルのパーティ提案ツール",
   "type": "module",
   "private": true,
   "scripts": {

@@ -158,7 +158,7 @@ export async function drawTeamImage(result, { title, subtitle, spriteUrl, select
   if (selections?.length) ctx.fillText(fit(ctx, `おすすめ選出：${selections.map((s) => s.join('＋')).join(' ／ ')}`, W - PAD * 2), PAD, fy);
   ctx.font = `12px ${FONT}`;
   ctx.fillStyle = '#9aa2b3';
-  ctx.fillText('三世代 後期シングル PT作成ツール', PAD, fy + 22);
+  ctx.fillText('ポケットモンスターエメラルド　PT提案ツール', PAD, fy + 22);
 
   return canvas;
 }
