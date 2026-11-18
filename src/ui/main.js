@@ -5,6 +5,7 @@ import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
 import { recommend, isUsable, usableSets, TIER_LABEL, memberOf, DEX } from '../engine/recommend.js';
 import { STAT_KEYS } from '../engine/model.js';
+import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
 
 const MAX_LOCK = 3;
@@ -33,6 +34,11 @@ const h = (tag, attrs = {}, html = '') => {
 };
 const typeBadge = (t) => `<span class="type" style="--c:${TYPE_COLORS[t]}">${TYPE_NAMES[t]}</span>`;
 const tierBadge = (tier) => `<span class="tier tier-${tier}">${tier === 'S' ? '最上位' : tier === 'A' ? '☆☆☆' : tier === 'B' ? '☆☆' : '☆'}</span>`;
+// ドット絵：PokeAPI が GitHub で公開しているエメラルド版スプライトを表示時に読み込む（リポジトリには含めない）
+const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/emerald/';
+const sprite = (name, cls = '') => (DEX_NO[name]
+  ? `<img class="sprite ${cls}" src="${SPRITE_BASE}${DEX_NO[name]}.png" alt="" width="64" height="64" loading="lazy" decoding="async" onerror="this.remove()">`
+  : '');
 const kata = (s) => s.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60));
 
 const USABLE = POKEDEX.filter(isUsable).sort((a, b) => 'SABC'.indexOf(a.tier) - 'SABC'.indexOf(b.tier) || a.name.localeCompare(b.name, 'ja'));
@@ -63,7 +69,7 @@ function renderPicker() {
     for (const m of list) {
       const on = state.locked.some((l) => l.name === m.name);
       const b = h('button', { class: `mon ${on ? 'on' : ''}`, type: 'button', title: `${m.name}（${m.base.join('-')}）`, 'aria-pressed': on ? 'true' : 'false' },
-        `<span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m.tier)}</span>`);
+        `${sprite(m.name, 'sm')}<span class="mon-text"><span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m.tier)}</span></span>`);
       b.addEventListener('click', () => toggleLock(m.name));
       grid.append(b);
     }
@@ -99,7 +105,7 @@ function renderLocked() {
   for (const l of state.locked) {
     const mon = DEX.get(l.name);
     const row = h('div', { class: 'locked' });
-    const head = h('div', { class: 'locked-head' }, `<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon.tier)}
+    const head = h('div', { class: 'locked-head' }, `${sprite(mon.name, 'sm')}<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon.tier)}
       <span class="muted small">種族値 ${mon.base.join('-')} ／ 特性 ${esc(mon.abilities.join('・'))}${mon.spread ? ` ／ 代表的な配分 ${esc(mon.spread)}` : ''}</span>`);
     const rm = h('button', { class: 'ghost', type: 'button', 'aria-label': `${mon.name}を外す` }, '外す');
     rm.addEventListener('click', () => toggleLock(mon.name));
@@ -205,7 +211,7 @@ function renderTeam(r, pi) {
     const locked = state.locked.some((l) => l.name === m.name);
     const card = h('article', { class: `member ${locked ? 'is-locked' : ''}` });
     card.innerHTML = `
-      <header><strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon.tier)}</header>
+      <header>${sprite(m.name)}<strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon.tier)}</header>
       <div class="kv"><span>持ち物</span><b>${esc(m.item || '自由')}</b></div>
       <div class="kv"><span>特性</span><b>${esc(m.ability)}</b><span>性格</span><b>${esc(m.nature)}</b></div>
       ${statLine(m)}

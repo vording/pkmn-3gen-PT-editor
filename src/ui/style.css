@@ -55,11 +55,14 @@ select, input[type=search] {
 .controls input { flex: 1 1 220px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; max-height: 340px; overflow-y: auto; padding: 2px; }
 .mon {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left;
+  display: flex; flex-direction: row; align-items: center; gap: 4px; text-align: left;
   border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 6px 8px; cursor: pointer;
 }
 .mon:hover { border-color: var(--accent); }
 .mon.on { background: var(--accent-soft); border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.mon-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.sprite { image-rendering: pixelated; flex: none; width: 64px; height: 64px; margin: -6px 0; }
+.sprite.sm { width: 40px; height: 40px; margin: -4px -2px; }
 .mon-name { font-weight: 600; font-size: .92rem; }
 .mon-meta { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
 .type {
