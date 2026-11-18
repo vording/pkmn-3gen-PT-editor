@@ -159,3 +159,16 @@ test('独自ランク：使用可能な全ポケモンに付いていて、生�
   const fresh = computeOwnScores().find((x) => x.name === 'メタグロス');
   assert.ok(Math.abs(fresh.power - OWN_RANK['メタグロス'].power) < 0.002, 'データが古い可能性（npm run rank）');
 });
+
+test('252振りへの切り替え：性格はそのままで努力値と実数値だけ変わる', async () => {
+  const { withSpread, mainAttackStat, calcStat } = await import('../src/engine/model.js');
+  const ptera = memberOf('プテラ', 0);
+  assert.equal(mainAttackStat(ptera), 'A');
+  const as = withSpread(ptera, 'atkSpe');
+  assert.deepEqual(as.evs, [4, 252, 0, 0, 0, 252]);
+  assert.equal(as.nature, ptera.nature);
+  assert.equal(as.stats[5], calcStat(5, 130, 252, ptera.nature));
+  const hb = withSpread(memberOf('ハピナス', 0), 'hpDef');
+  assert.deepEqual(hb.evs, [252, 0, 252, 0, 4, 0]);
+  assert.equal(withSpread(ptera, 'set'), ptera);
+});

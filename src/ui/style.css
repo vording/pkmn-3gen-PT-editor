@@ -211,3 +211,7 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
   .nat-up { color: #ff7a70; }
   .nat-down { color: #7aa8ff; }
 }
+
+.spread { display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; font-size: .8rem; color: var(--muted); }
+.spread select { flex: 1; min-width: 0; padding: 3px 6px; font-size: .8rem; }
+@media (max-width: 560px) { .spread select { font-size: 16px; } }

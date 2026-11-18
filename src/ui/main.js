@@ -4,7 +4,7 @@ import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
 import { recommend, isUsable, usableSets, OWN_ORDER, memberOf, DEX, alternatives, evaluateTeam } from '../engine/recommend.js';
-import { STAT_KEYS, natureEffect } from '../engine/model.js';
+import { STAT_KEYS, natureEffect, SPREAD_PRESETS, spreadLabel, withSpread } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
 import { adjustmentNotes, gamePlan } from '../engine/analysis.js';
@@ -19,6 +19,7 @@ const state = {
   includeMinor: false,
   allowLati: true,
   results: null,
+  spreads: {}, // 配分の切り替え（提案番号:枠:型ID → プリセット）
   active: 0,
   busy: false,
 };
@@ -213,6 +214,32 @@ function renderResults() {
   return sec;
 }
 
+// 配分の切り替え（表示・画像・テキストだけに反映。パーティの評価はそのまま）
+const spreadKey = (pi, mi, m) => `${pi}:${mi}:${m.id}`;
+function viewResult(r, pi) {
+  return {
+    ...r,
+    members: r.members.map((d, mi) => {
+      const key = state.spreads[spreadKey(pi, mi, d.member)];
+      return key && key !== 'set' ? { ...d, member: withSpread(d.member, key) } : d;
+    }),
+  };
+}
+
+function spreadSelect(r, pi, mi) {
+  const base = r.members[mi].member;
+  const cur = state.spreads[spreadKey(pi, mi, base)] ?? 'set';
+  const wrap = h('label', { class: 'spread' }, '<span>配分</span>');
+  const sel = h('select', { 'aria-label': `${base.name}の配分` });
+  sel.innerHTML = SPREAD_PRESETS.map((p) => `<option value="${p.key}" ${p.key === cur ? 'selected' : ''}>${esc(spreadLabel(base, p.key))}</option>`).join('');
+  sel.addEventListener('change', () => {
+    state.spreads[spreadKey(pi, mi, base)] = sel.value;
+    render();
+  });
+  wrap.append(sel);
+  return wrap;
+}
+
 function statLine(m) {
   const ev = m.evs.map((v, i) => (v ? `${STAT_KEYS[i]}${v}` : '')).filter(Boolean).join(' ');
   const eff = natureEffect(m.nature);
@@ -228,11 +255,12 @@ function renderTeam(r, pi) {
   const wrap = h('div', { class: 'team' });
   const bar = h('div', { class: 'team-bar' });
   const save = h('button', { class: 'ghost', type: 'button' }, '画像で保存');
-  save.addEventListener('click', () => saveImage(r, pi, save));
+  save.addEventListener('click', () => saveImage(viewResult(r, pi), pi, save));
   bar.append(save);
   wrap.append(bar);
   const members = h('div', { class: 'members' });
-  r.members.forEach((d, mi) => {
+  const view = viewResult(r, pi);
+  view.members.forEach((d, mi) => {
     const m = d.member;
     const locked = state.locked.some((l) => l.name === m.name);
     const card = h('article', { class: `member ${locked ? 'is-locked' : ''}` });
@@ -241,11 +269,13 @@ function renderTeam(r, pi) {
       <div class="kv"><span>持ち物</span><b>${esc(m.item || '自由')}</b></div>
       <div class="kv"><span>特性</span><b>${esc(m.ability)}</b><span>性格</span><b>${esc(m.nature)}</b></div>
       ${statLine(m)}
+      <div class="spread-slot"></div>
       <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
       <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
       <ul class="reasons">${d.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
       ${adjustmentHtml(m)}
       <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
+    card.querySelector('.spread-slot').replaceWith(spreadSelect(r, pi, mi));
     if (!locked) {
       card.append(renderAlternatives(r, pi, mi));
       const btn = h('button', { class: 'ghost small', type: 'button', disabled: state.busy }, 'おまかせで入れ替え');
@@ -257,7 +287,7 @@ function renderTeam(r, pi) {
   wrap.append(members);
 
   const grid2 = h('div', { class: 'analysis' });
-  grid2.append(renderPlan(r), renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(r));
+  grid2.append(renderPlan(r), renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(view));
   wrap.append(grid2);
   return wrap;
 }

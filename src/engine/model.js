@@ -140,6 +140,39 @@ export function buildMember(mon, setIndex = 0) {
   };
 }
 
+// ---- 252振り（ぶっぱ）への切り替え ----
+// atk は攻撃側の能力（技構成から物理なら A、特殊なら C）
+export const SPREAD_PRESETS = [
+  { key: 'set', label: '型の配分' },
+  { key: 'atkSpe', label: (atk) => `${atk}S振り（${atk}252・S252・H4）`, evs: (atk) => ({ 0: 4, [atk === 'A' ? 1 : 3]: 252, 5: 252 }) },
+  { key: 'hpAtk', label: (atk) => `H${atk}振り（H252・${atk}252・B4）`, evs: (atk) => ({ 0: 252, [atk === 'A' ? 1 : 3]: 252, 2: 4 }) },
+  { key: 'hpDef', label: () => 'HB振り（H252・B252・D4）', evs: () => ({ 0: 252, 2: 252, 4: 4 }) },
+  { key: 'hpSpd', label: () => 'HD振り（H252・D252・B4）', evs: () => ({ 0: 252, 4: 252, 2: 4 }) },
+];
+
+// 技構成から主に使う攻撃能力（A か C）
+export function mainAttackStat(m) {
+  const phys = m.moves.filter((x) => x.power > 0 && x.physical).reduce((a, x) => a + x.power, 0);
+  const spec = m.moves.filter((x) => x.power > 0 && !x.physical).reduce((a, x) => a + x.power, 0);
+  if (phys === spec) return m.mon.base[1] >= m.mon.base[3] ? 'A' : 'C';
+  return phys > spec ? 'A' : 'C';
+}
+
+export function spreadLabel(m, key) {
+  const p = SPREAD_PRESETS.find((x) => x.key === key) ?? SPREAD_PRESETS[0];
+  return typeof p.label === 'function' ? p.label(mainAttackStat(m)) : p.label;
+}
+
+// 型はそのまま（性格・技・持ち物も同じ）で、努力値だけ差し替えた型を返す
+export function withSpread(m, key) {
+  const p = SPREAD_PRESETS.find((x) => x.key === key);
+  if (!p || !p.evs) return m;
+  const map = p.evs(mainAttackStat(m));
+  const evs = STAT_KEYS.map((_, i) => map[i] ?? 0);
+  const stats = STAT_KEYS.map((_, i) => calcStat(i, m.mon.base[i], evs[i], m.nature));
+  return { ...m, id: `${m.id}@${key}`, evs, stats, evsEstimated: false, spreadKey: key };
+}
+
 // 表示用の役割ラベル
 export function roleLabels(m) {
   const [H, A, B, C, D, S] = m.stats;
