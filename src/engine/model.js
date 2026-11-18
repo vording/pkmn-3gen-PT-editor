@@ -15,6 +15,12 @@ export const NATURES = {
   がんばりや: null, すなお: null, てれや: null, きまぐれ: null, まじめ: null,
 };
 
+// 性格で上がる／下がる能力（STAT_KEYS のインデックス）。補正なしは [null, null]
+export function natureEffect(nature) {
+  const mod = NATURES[nature];
+  return mod ? { up: mod[0], down: mod[1] } : { up: null, down: null };
+}
+
 const LEVEL = 50;
 
 export function calcStat(index, base, ev = 0, nature = null, iv = 31) {

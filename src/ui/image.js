@@ -1,6 +1,6 @@
 // 提案パーティを1枚の画像（PNG）に描く
 import { TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
-import { STAT_KEYS, resolveMove } from '../engine/model.js';
+import { STAT_KEYS, resolveMove, natureEffect } from '../engine/model.js';
 
 const W = 1200;
 const PAD = 32;
@@ -116,7 +116,24 @@ export async function drawTeamImage(result, { title, subtitle, spriteUrl, select
     ctx.fillStyle = '#687082';
     ctx.fillText(fit(ctx, `努力値 ${ev}${m.evsEstimated ? '（目安）' : ''}`, iw), x + 16, ly);
     ly += 20;
-    ctx.fillText(`実数値 ${m.stats.join('-')}`, x + 16, ly);
+    // 実数値：性格で上がる能力は赤、下がる能力は青
+    {
+      const eff = natureEffect(m.nature);
+      let sx = x + 16;
+      const put = (text, color, bold = false) => {
+        ctx.font = `${bold ? 'bold ' : ''}13px ${FONT}`;
+        ctx.fillStyle = color;
+        ctx.fillText(text, sx, ly);
+        sx += ctx.measureText(text).width;
+      };
+      put('実数値 ', '#687082');
+      m.stats.forEach((v, k) => {
+        if (k) put('-', '#687082');
+        if (k === eff.up) put(String(v), '#d1342b', true);
+        else if (k === eff.down) put(String(v), '#2f6fd6', true);
+        else put(String(v), '#687082');
+      });
+    }
     ly += 14;
 
     const mw = (iw - 8) / 2;

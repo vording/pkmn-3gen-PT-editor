@@ -203,3 +203,11 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
   -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto;
 }
 .preview-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* 性格補正：上昇は赤、下降は青 */
+.nat-up { color: #d1342b; font-weight: 700; }
+.nat-down { color: #2f6fd6; font-weight: 700; }
+@media (prefers-color-scheme: dark) {
+  .nat-up { color: #ff7a70; }
+  .nat-down { color: #7aa8ff; }
+}

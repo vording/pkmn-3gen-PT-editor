@@ -66,7 +66,7 @@ export function adjustmentNotes(member) {
   const faster = uniq(speeds.filter((x) => x.s > s)).sort((a, b) => a.s - b.s).slice(0, 2);
   const fmt = (x) => `${x.name}${x.label ? `・${x.label}` : ''}(${x.s})`;
   const parts = [];
-  if (slower.length) parts.push(`${slower.map(fmt).join('、')}より速い`);
+  if (slower.length) parts.push(`${slower.map(fmt).join('、')}抜き`);
   if (same.length) parts.push(`${same.map(fmt).join('、')}と同速`);
   if (faster.length) parts.push(`${faster.map(fmt).join('、')}より遅い`);
   notes.speed = `S${s}：${parts.join('／') || '比較対象なし'}`;

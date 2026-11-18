@@ -4,7 +4,7 @@ import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
 import { recommend, isUsable, usableSets, OWN_ORDER, memberOf, DEX, alternatives, evaluateTeam } from '../engine/recommend.js';
-import { STAT_KEYS } from '../engine/model.js';
+import { STAT_KEYS, natureEffect } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
 import { adjustmentNotes, gamePlan } from '../engine/analysis.js';
@@ -215,7 +215,13 @@ function renderResults() {
 
 function statLine(m) {
   const ev = m.evs.map((v, i) => (v ? `${STAT_KEYS[i]}${v}` : '')).filter(Boolean).join(' ');
-  return `<div class="stats"><span>実数値 ${m.stats.join('-')}</span><span>努力値 ${ev || '—'}${m.evsEstimated ? '（目安）' : ''}</span></div>`;
+  const eff = natureEffect(m.nature);
+  const stat = (v, i) => {
+    const cls = i === eff.up ? 'nat-up' : i === eff.down ? 'nat-down' : '';
+    const tip = i === eff.up ? `${STAT_KEYS[i]}↑（性格で上昇）` : i === eff.down ? `${STAT_KEYS[i]}↓（性格で下降）` : '';
+    return cls ? `<span class="${cls}" title="${tip}">${v}</span>` : `${v}`;
+  };
+  return `<div class="stats"><span>実数値 ${m.stats.map(stat).join('-')}</span><span>努力値 ${ev || '—'}${m.evsEstimated ? '（目安）' : ''}</span></div>`;
 }
 
 function renderTeam(r, pi) {
