@@ -184,3 +184,12 @@ test('ぶっぱの提案：性格に合う252振りを1つ選び、理由を返�
   assert.ok(b2.member.evs.filter((v) => v === 252).length === 2);
   assert.ok(Array.isArray(b2.reasons));
 });
+
+test('採用理由：種類つきで、型の理由を必ず含む', () => {
+  const [r] = recommend({ locked: [{ name: 'ヘラクロス', setIndex: null }], count: 1, beamWidth: 10 });
+  for (const d of r.members) {
+    assert.ok(d.why.length >= 1);
+    assert.ok(d.why.some((w) => w.kind === '型'), d.member.name);
+  }
+  assert.equal(r.members.find((d) => d.member.name === 'ヘラクロス').why[0].kind, '固定');
+});

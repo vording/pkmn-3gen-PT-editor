@@ -13,10 +13,10 @@ import { OWN_RANK } from '../data/ownrank.js';
 
 // 上位入賞構築に共通する枠（stoic氏「上位入賞66構築の分類」より）
 export const STRUCTURE_SLOTS = [
-  { key: 'special', label: '特殊を数値で受ける枠（カビゴンなど）', penalty: 1.0, test: (m) => m.stats[0] * m.stats[4] >= 30000 },
-  { key: 'normal', label: 'ノーマル耐性（鋼・岩・ゴースト）か格闘の枠', penalty: 0.7, test: (m) => m.types.some((t) => ['steel', 'rock', 'ghost', 'fighting'].includes(t)) },
-  { key: 'steel', label: '鋼を半減し地面が等倍以下の枠（水・サンダーなど）', penalty: 0.7, test: (m) => defensiveMultiplier(m, 'steel') <= 0.5 && defensiveMultiplier(m, 'ground') <= 1 },
-  { key: 'fightground', label: '格闘か地面を半減以下で受ける枠', penalty: 0.5, test: (m) => defensiveMultiplier(m, 'fighting') <= 0.5 || defensiveMultiplier(m, 'ground') <= 0.5 },
+  { key: 'special', short: '特殊を数値で受ける枠', label: '特殊を数値で受ける枠（カビゴンなど）', penalty: 1.0, test: (m) => m.stats[0] * m.stats[4] >= 30000 },
+  { key: 'normal', short: 'ノーマル耐性（鋼・岩・ゴースト）か格闘の枠', label: 'ノーマル耐性（鋼・岩・ゴースト）か格闘の枠', penalty: 0.7, test: (m) => m.types.some((t) => ['steel', 'rock', 'ghost', 'fighting'].includes(t)) },
+  { key: 'steel', short: '鋼を半減し地面が等倍以下の枠', label: '鋼を半減し地面が等倍以下の枠（水・サンダーなど）', penalty: 0.7, test: (m) => defensiveMultiplier(m, 'steel') <= 0.5 && defensiveMultiplier(m, 'ground') <= 1 },
+  { key: 'fightground', short: '格闘か地面に強い枠', label: '格闘か地面を半減以下で受ける枠', penalty: 0.5, test: (m) => defensiveMultiplier(m, 'fighting') <= 0.5 || defensiveMultiplier(m, 'ground') <= 0.5 },
 ];
 
 // 環境ランク：2025/05〜2026/08 の大会成績にもとづくランク（stoic氏）があればそれを、なければ考察本の重要度を使う
@@ -312,6 +312,33 @@ export function bestSelections(members, mustInclude = [], top = 3) {
   return out.sort((a, b) => b.score - a.score).slice(0, top);
 }
 
+// 型名を「」で囲む（すでに『』を含むものはそのまま）
+const quoteLabel = (label) => (label.includes('『') ? label : `「${label}」`);
+
+// この型を選んだ理由：同じポケモンのほかの型と、チーム全体の評価で比べる
+function setReason(members, mi, lockedSet) {
+  const m = members[mi];
+  if (lockedSet.has(m.name) && lockedSet.get(m.name) != null) return `選択した型（${m.set.label}）`;
+  const others = members.filter((_, i) => i !== mi);
+  const used = new Map(others.filter((x) => x.item).map((x) => [x.item, x.name]));
+  const total = (cand) => scoreTeam(members.map((x, i) => (i === mi ? cand : x))).total;
+  const cur = total(m);
+  let blocked = null;
+  let nextBest = null;
+  for (const i of usableSets(m.mon).slice(0, 6)) {
+    if (i === m.setIndex) continue;
+    const alt = memberOf(m.name, i);
+    const t = total(alt);
+    if (alt.item && used.has(alt.item)) {
+      if (t > cur + 0.05 && (!blocked || t > blocked.t)) blocked = { alt, t, owner: used.get(alt.item) };
+    } else if (!nextBest || t > nextBest.t) nextBest = { alt, t };
+  }
+  const src = m.set.source;
+  if (blocked) return `本当は${quoteLabel(blocked.alt.set.label)}（${blocked.alt.item}）が合うが、持ち物が${blocked.owner}と重複するため${quoteLabel(m.set.label)}（${src}）`;
+  if (nextBest) return `${quoteLabel(m.set.label)}（${src}）が、次点の${quoteLabel(nextBest.alt.set.label)}より評価が高い（+${(cur - nextBest.t).toFixed(2)}）`;
+  return `${quoteLabel(m.set.label)}（${src}）`;
+}
+
 function describeTeam(members, locked) {
   const { threats } = context();
   const rows = members.map(rowOf);
@@ -335,19 +362,48 @@ function describeTeam(members, locked) {
   const lockedWeak = new Set();
   for (const lm of lockedMembers) for (const t of TYPES) if (defensiveMultiplier(lm, t) >= 2) lockedWeak.add(t);
 
+  const teamCombos = findCombos(members);
+  const lockedSet = new Map(locked.map((l) => [l.name, l.setIndex]));
   const details = members.map((m, mi) => {
-    const reasons = [];
-    if (lockedNames.has(m.name)) reasons.push('選択したポケモン');
+    // why: { kind, text } の配列。kind は表示用の見出し
+    const why = [];
+    if (lockedNames.has(m.name)) why.push({ kind: '固定', text: '選択したポケモン' });
     const answers = threatTable.filter((t) => t.best === mi && t.bestScore > 0.15 && t.name !== m.name)
       .sort((a, b) => b.weight * b.bestScore - a.weight * a.bestScore).slice(0, 4).map((t) => t.name);
-    if (answers.length) reasons.push(`${answers.join('・')}に対してチーム内で最も有利`);
+    if (answers.length) why.push({ kind: '対応', text: `${answers.join('・')}に対してチーム内で最も有利` });
+
+    // 抜けるとチームに有利なポケモンがいなくなる相手
+    const lost = threatTable.filter((t) => t.weight >= 0.8 && t.name !== m.name && t.scores[mi] > 0.15
+      && Math.max(...t.scores.filter((_, i) => i !== mi)) <= 0).slice(0, 4).map((t) => t.name);
+    if (lost.length) why.push({ kind: '穴埋め', text: `抜けると${lost.join('・')}に有利なポケモンがいなくなる` });
+
+    // 上位構築の枠
+    for (const slot of STRUCTURE_SLOTS) {
+      if (!slot.test(m)) continue;
+      const owners = members.filter(slot.test);
+      why.push({ kind: '枠', text: owners.length === 1 ? `唯一の${slot.short}` : `${slot.short}（ほかに${owners.filter((x) => x !== m).map((x) => x.name).join('・')}）` });
+    }
+
+    // コンボ
+    const combos = [...teamCombos.trios, ...teamCombos.pairs].filter((c) => c.members.some((slot) => (Array.isArray(slot) ? slot.includes(m.name) : slot === m.name)));
+    if (combos.length) why.push({ kind: 'コンボ', text: combos.map((c) => c.name).join('・') });
+
+    // 身代わり・バトン対策
+    const tools = antiComboTools(m);
+    if (tools.length) {
+      const only = members.filter((x) => antiComboTools(x).length).length === 1;
+      why.push({ kind: '対策', text: `${only ? '唯一の' : ''}身代わり・バトン対策（${tools.join('・')}）` });
+    }
+
     if (!lockedNames.has(m.name) && lockedMembers.length) {
       const covers = [...lockedWeak].filter((t) => defensiveMultiplier(m, t) <= 0.5);
-      if (covers.length) reasons.push(`${lockedMembers.map((x) => x.name).join('・')}の弱点（${covers.map((t) => TYPE_JP[t]).join('・')}）を半減以下で受けられる`);
-      const pc = lockedMembers.reduce((s, x) => s + pairCount(x.name, m.name), 0);
-      if (pc >= 1) reasons.push(`構築例・大会パーティで${lockedMembers.map((x) => x.name).join('・')}と${Math.round(pc)}回同時採用`);
+      if (covers.length) why.push({ kind: '補完', text: `${lockedMembers.map((x) => x.name).join('・')}の弱点（${covers.map((t) => TYPE_JP[t]).join('・')}）を半減以下で受けられる` });
+      const pc = lockedMembers.reduce((acc, x) => acc + pairCount(x.name, m.name), 0);
+      if (pc >= 1) why.push({ kind: '実績', text: `構築例・大会パーティで${lockedMembers.map((x) => x.name).join('・')}と${Math.round(pc)}回同時採用` });
     }
-    return { member: m, roles: roleLabels(m), reasons };
+
+    why.push({ kind: '型', text: setReason(members, mi, lockedSet) });
+    return { member: m, roles: roleLabels(m), reasons: why.map((w) => w.text), why };
   });
 
   const score = scoreTeam(members);

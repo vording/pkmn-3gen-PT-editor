@@ -283,7 +283,7 @@ function renderTeam(r, pi) {
       <div class="spread-slot"></div>
       <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
       <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
-      <ul class="reasons">${d.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <div class="why"><p class="why-h">採用理由</p><ul>${(d.why ?? d.reasons.map((text) => ({ kind: '', text }))).map((w) => `<li>${w.kind ? `<span class="why-k">${esc(w.kind)}</span>` : ''}${esc(w.text)}</li>`).join('')}</ul></div>
       ${adjustmentHtml(m)}
       <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
     card.querySelector('.spread-slot').replaceWith(buppaBox(r, pi, mi));
