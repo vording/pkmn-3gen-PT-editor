@@ -350,3 +350,39 @@ function describeTeam(members, locked) {
 }
 
 export { TYPE_JP };
+
+// 指定した枠の入れ替え候補（種族ごとに一番合う型を1つ）。delta は今の構成からの評価値の増減
+export function alternatives(members, index, { includeMinor = false, allowLati = true, count = 6 } = {}) {
+  const { threats } = context();
+  const others = members.filter((_, i) => i !== index);
+  const names = new Set(others.map((m) => m.name));
+  const items = new Set(others.map((m) => m.item).filter(Boolean));
+  const current = scoreTeam(members).total;
+  const best = new Map();
+  for (const c of candidatePool({ includeMinor, allowLati })) {
+    if (names.has(c.name) || c.name === members[index].name || (c.item && items.has(c.item))) continue;
+    const team = [...others.slice(0, index), c, ...others.slice(index)];
+    const total = scoreTeam(team).total;
+    const prev = best.get(c.name);
+    if (!prev || total > prev.total) best.set(c.name, { member: c, total });
+  }
+  return [...best.values()].sort((a, b) => b.total - a.total).slice(0, count).map(({ member, total }) => {
+    // 得意な相手：使用率×有利度が大きい仮想敵（種族の重複なし）
+    const row = rowOf(member);
+    const agg = new Map();
+    threats.forEach((t, ti) => {
+      const e = agg.get(t.name) ?? { name: t.name, w: 0, sum: 0 };
+      e.w += t.weight;
+      e.sum += row[ti] * t.weight;
+      agg.set(t.name, e);
+    });
+    const good = [...agg.values()].filter((e) => e.w >= 1.5 && e.sum / e.w > 0.3 && e.name !== member.name)
+      .sort((a, b) => b.sum - a.sum).slice(0, 3).map((e) => e.name);
+    return { member, delta: total - current, roles: roleLabels(member), good };
+  });
+}
+
+// 型を指定した6体で提案結果を作り直す（入れ替え後の表示用）
+export function evaluateTeam(members, locked = []) {
+  return describeTeam(members, locked);
+}

@@ -119,3 +119,19 @@ test('戦い方：勝ち筋・先発・各ポケモンの動かし方を返す',
   assert.equal(plan.perMember.length, 6);
   assert.ok(plan.perMember.every((p) => p.lines.length >= 1));
 });
+
+test('入れ替え候補：他の5体と種族・道具が重複しない候補を返し、選ぶと作り直せる', async () => {
+  const { alternatives, evaluateTeam } = await import('../src/engine/recommend.js');
+  const [r] = recommend({ locked: [{ name: 'バシャーモ', setIndex: 0 }], count: 1, beamWidth: 10 });
+  const ms = r.members.map((d) => d.member);
+  const idx = 1;
+  const alts = alternatives(ms, idx);
+  assert.ok(alts.length > 0);
+  const others = ms.filter((_, i) => i !== idx);
+  for (const a of alts) {
+    assert.ok(!others.some((o) => o.name === a.member.name));
+    if (a.member.item) assert.ok(!others.some((o) => o.item === a.member.item));
+  }
+  const next = evaluateTeam(ms.map((m, i) => (i === idx ? alts[0].member : m)), [{ name: 'バシャーモ', setIndex: 0 }]);
+  assert.equal(next.members[idx].member.name, alts[0].member.name);
+});

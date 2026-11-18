@@ -3,7 +3,7 @@ import { POKEDEX } from '../data/pokedex.js';
 import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
-import { recommend, isUsable, usableSets, TIER_LABEL, TIER_ORDER, memberOf, DEX } from '../engine/recommend.js';
+import { recommend, isUsable, usableSets, TIER_LABEL, TIER_ORDER, memberOf, DEX, alternatives, evaluateTeam } from '../engine/recommend.js';
 import { STAT_KEYS } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
@@ -230,7 +230,8 @@ function renderTeam(r, pi) {
       ${adjustmentHtml(m)}
       <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
     if (!locked) {
-      const btn = h('button', { class: 'ghost small', type: 'button', disabled: state.busy }, 'この枠を入れ替え');
+      card.append(renderAlternatives(r, pi, mi));
+      const btn = h('button', { class: 'ghost small', type: 'button', disabled: state.busy }, 'おまかせで入れ替え');
       btn.addEventListener('click', () => replaceMember(pi, mi));
       card.append(btn);
     }
@@ -242,6 +243,41 @@ function renderTeam(r, pi) {
   grid2.append(renderPlan(r), renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(r));
   wrap.append(grid2);
   return wrap;
+}
+
+// 入れ替え候補：開いたときに計算する
+function renderAlternatives(r, pi, mi) {
+  const el = h('details', { class: 'alt' }, '<summary>入れ替え候補を見る</summary>');
+  el.addEventListener('toggle', () => {
+    if (!el.open || el.dataset.done) return;
+    el.dataset.done = '1';
+    const members = r.members.map((d) => d.member);
+    const list = alternatives(members, mi, { includeMinor: state.includeMinor, allowLati: state.allowLati });
+    const ul = h('ul', { class: 'alt-list' });
+    if (!list.length) ul.innerHTML = '<li class="muted">候補が見つかりませんでした</li>';
+    for (const a of list) {
+      const m = a.member;
+      const sign = a.delta >= 0 ? '+' : '';
+      const li = h('li', {}, `${sprite(m.name, 'sm')}<div class="alt-body">
+        <div><b>${esc(m.name)}</b> ${tierBadge(m.mon.meta)} <span class="muted small">評価 ${sign}${a.delta.toFixed(1)}</span></div>
+        <div class="small">${esc(m.set.label)} ＠${esc(m.item || '自由')}</div>
+        <div class="small muted">${esc(m.set.moves.join('・'))}</div>
+        ${a.good.length ? `<div class="small">得意：${a.good.map(esc).join('・')}</div>` : ''}
+      </div>`);
+      const pick = h('button', { class: 'ghost small', type: 'button' }, 'これにする');
+      pick.addEventListener('click', () => {
+        const before = members[mi].name;
+        const next = members.map((x, i) => (i === mi ? m : x));
+        state.results[pi] = evaluateTeam(next, state.locked.map((l) => ({ ...l })));
+        flash(`${before} → ${m.name} に入れ替えました`);
+        render();
+      });
+      li.append(pick);
+      ul.append(li);
+    }
+    el.append(ul, h('p', { class: 'muted small' }, '評価は今の6体と比べた増減（マイナスでも、好みや読みで選んで構いません）'));
+  });
+  return el;
 }
 
 // 調整の目安（素早さライン・耐久・火力）
