@@ -149,3 +149,13 @@ test('構築知識：コンボは前提の技があるときだけ成立し、�
   assert.equal(classifyArchetype(kgs), 'グロスサンダー');
   assert.equal(classifyArchetype([...kgs, memberOf('スイクン', 0)]), '鋼水サンダー');
 });
+
+test('独自ランク：使用可能な全ポケモンに付いていて、生成し直すと同じ結果になる', async () => {
+  const { OWN_RANK } = await import('../src/data/ownrank.js');
+  const usable = POKEDEX.filter(isUsable);
+  for (const m of usable) assert.ok(OWN_RANK[m.name], `${m.name} の独自ランクがない（npm run rank）`);
+  assert.equal(OWN_RANK['カビゴン'].rank, 'S+');
+  const { computeOwnScores } = await import('../src/engine/recommend.js');
+  const fresh = computeOwnScores().find((x) => x.name === 'メタグロス');
+  assert.ok(Math.abs(fresh.power - OWN_RANK['メタグロス'].power) < 0.002, 'データが古い可能性（npm run rank）');
+});

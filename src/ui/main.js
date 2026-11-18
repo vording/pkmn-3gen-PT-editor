@@ -3,7 +3,7 @@ import { POKEDEX } from '../data/pokedex.js';
 import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
-import { recommend, isUsable, usableSets, TIER_LABEL, TIER_ORDER, memberOf, DEX, alternatives, evaluateTeam } from '../engine/recommend.js';
+import { recommend, isUsable, usableSets, OWN_ORDER, memberOf, DEX, alternatives, evaluateTeam } from '../engine/recommend.js';
 import { STAT_KEYS } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
@@ -35,7 +35,14 @@ const h = (tag, attrs = {}, html = '') => {
   return el;
 };
 const typeBadge = (t) => `<span class="type" style="--c:${TYPE_COLORS[t]}">${TYPE_NAMES[t]}</span>`;
-const tierBadge = (tier) => `<span class="tier tier-${tier.replace('+', 'p')}" title="${tier.startsWith('P') ? '考察本の重要度' : '環境ランク（2025/05〜2026/08）'}">${TIER_LABEL[tier]}</span>`;
+// 独自ランクのバッジ。ツールチップに元の情報（stoic氏ランク・使用率・考察本の重要度）も出す
+const rankInfo = (mon) => [
+  `独自ランク ${mon.own.rank}${mon.own.pos ? `（${mon.own.pos}位）` : ''}`,
+  mon.rank2026 ? `stoic氏ランク ${mon.rank2026.rank}（使用率${mon.rank2026.usage}%・勝率${mon.rank2026.win}%）` : 'stoic氏ランク：圏外',
+  `2026年大会の使用率 ${mon.usage2026 ? `${(mon.usage2026 * 100).toFixed(1)}%` : '0%'}`,
+  `考察本の重要度 ${{ S: '最上位', A: '☆☆☆', B: '☆☆', C: '☆' }[mon.tier]}`,
+].join('\n');
+const tierBadge = (mon) => `<span class="tier tier-${mon.own.rank.replace('+', 'p')}" title="${esc(rankInfo(mon))}">${mon.own.rank}</span>`;
 const pct = (x) => `${(x * 100).toFixed(x >= 0.1 ? 0 : 1)}%`;
 // ドット絵：PokeAPI が GitHub で公開しているエメラルド版スプライトを表示時に読み込む（リポジトリには含めない）
 const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/emerald/';
@@ -44,7 +51,7 @@ const sprite = (name, cls = '') => (DEX_NO[name]
   : '');
 const kata = (s) => s.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60));
 
-const USABLE = POKEDEX.filter(isUsable).sort((a, b) => (b.usage2026 ?? 0) - (a.usage2026 ?? 0) || TIER_ORDER.indexOf(a.meta) - TIER_ORDER.indexOf(b.meta) || a.name.localeCompare(b.name, 'ja'));
+const USABLE = POKEDEX.filter(isUsable).sort((a, b) => (a.own.pos ?? 999) - (b.own.pos ?? 999) || a.name.localeCompare(b.name, 'ja'));
 
 function render() {
   app.innerHTML = '';
@@ -60,20 +67,20 @@ function renderPicker() {
   search.addEventListener('input', () => { state.query = search.value; updateGrid(); });
   const typeSel = h('select', { 'aria-label': 'タイプで絞り込み' }, `<option value="">すべてのタイプ</option>${TYPES.map((t) => `<option value="${t}" ${state.type === t ? 'selected' : ''}>${TYPE_NAMES[t]}</option>`).join('')}`);
   typeSel.addEventListener('change', () => { state.type = typeSel.value; updateGrid(); });
-  const tierSel = h('select', { 'aria-label': 'ランクで絞り込み' }, `<option value="">すべてのランク</option>${TIER_ORDER.map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>${t.startsWith('P') ? `考察本の重要度 ${TIER_LABEL[t]}` : `環境ランク ${TIER_LABEL[t]}`}</option>`).join('')}`);
+  const tierSel = h('select', { 'aria-label': 'ランクで絞り込み' }, `<option value="">すべてのランク</option>${OWN_ORDER.map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>ランク ${t}</option>`).join('')}`);
   tierSel.addEventListener('change', () => { state.tier = tierSel.value; updateGrid(); });
   controls.append(search, typeSel, tierSel);
-  const legend = h('p', { class: 'legend muted small' }, 'バッジの見方：S+〜D＝2025〜26年の大会の使用率・勝率によるランク／☆☆☆・☆☆・☆＝ランク外のポケモンの考察本での重要度（☆が多いほど重要）');
+  const legend = h('p', { class: 'legend muted small' }, 'ランク（S+〜E）はこのツールの独自評価：対面性能（環境上位への有利度）・2026年大会の使用率と入賞率・考察本の重要度・勝率から算出。バッジにカーソルを合わせると（スマホは選択後の詳細で）stoic氏ランク・使用率・考察本の重要度も見られます');
   const grid = h('div', { class: 'grid' });
   sec.append(controls, legend, grid);
   function updateGrid() {
     const q = kata(state.query.trim());
-    const list = USABLE.filter((m) => (!q || m.name.includes(q)) && (!state.type || m.types.includes(state.type)) && (!state.tier || m.meta === state.tier));
+    const list = USABLE.filter((m) => (!q || m.name.includes(q)) && (!state.type || m.types.includes(state.type)) && (!state.tier || m.own.rank === state.tier));
     grid.innerHTML = '';
     for (const m of list) {
       const on = state.locked.some((l) => l.name === m.name);
       const b = h('button', { class: `mon ${on ? 'on' : ''}`, type: 'button', title: `${m.name}（${m.base.join('-')}）`, 'aria-pressed': on ? 'true' : 'false' },
-        `${sprite(m.name, 'sm')}<span class="mon-text"><span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m.meta)}</span></span>`);
+        `${sprite(m.name, 'sm')}<span class="mon-text"><span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m)}</span></span>`);
       b.addEventListener('click', () => toggleLock(m.name));
       grid.append(b);
     }
@@ -109,15 +116,19 @@ function renderLocked() {
   for (const l of state.locked) {
     const mon = DEX.get(l.name);
     const row = h('div', { class: 'locked' });
-    const head = h('div', { class: 'locked-head' }, `${sprite(mon.name, 'sm')}<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon.meta)}
-      <span class="muted small">${mon.usage2026 ? `2026年大会の使用率 ${pct(mon.usage2026)} ／ ` : ''}${mon.rank2026 ? `勝率 ${mon.rank2026.win}% ／ ` : ''}種族値 ${mon.base.join('-')} ／ 特性 ${esc(mon.abilities.join('・'))}${mon.spread ? ` ／ 代表的な配分 ${esc(mon.spread)}` : ''}</span>`);
+    const head = h('div', { class: 'locked-head' }, `${sprite(mon.name, 'sm')}<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon)}
+      <span class="muted small">種族値 ${mon.base.join('-')} ／ 特性 ${esc(mon.abilities.join('・'))}${mon.spread ? ` ／ 代表的な配分 ${esc(mon.spread)}` : ''}</span>`);
     const rm = h('button', { class: 'ghost', type: 'button', 'aria-label': `${mon.name}を外す` }, '外す');
     rm.addEventListener('click', () => toggleLock(mon.name));
     head.append(rm);
+    const info = h('div', { class: 'rank-info small' }, `<span><b>独自ランク ${mon.own.rank}</b>${mon.own.pos ? `（${mon.own.pos}位・対面性能 ${mon.own.power >= 0 ? '+' : ''}${mon.own.power}）` : ''}</span>
+      <span>stoic氏ランク ${mon.rank2026 ? `${mon.rank2026.rank}（使用率${mon.rank2026.usage}%・勝率${mon.rank2026.win}%）` : '圏外'}</span>
+      <span>2026年大会の使用率 ${mon.usage2026 ? pct(mon.usage2026) : '0%'}${mon.topUsage2026 ? `（入賞パーティ ${pct(mon.topUsage2026)}）` : ''}</span>
+      <span>考察本の重要度 ${{ S: '最上位', A: '☆☆☆', B: '☆☆', C: '☆' }[mon.tier]}</span>`);
     const sel = h('select', { class: 'set-select', 'aria-label': `${mon.name}の型` });
     sel.innerHTML = `<option value="">型はおまかせ（パーティに合わせて選ぶ）</option>${usableSets(mon).map((i) => `<option value="${i}" ${l.setIndex === i ? 'selected' : ''}>${esc(setSummary(mon.sets[i]))}</option>`).join('')}`;
     sel.addEventListener('change', () => { l.setIndex = sel.value === '' ? null : Number(sel.value); });
-    row.append(head, sel);
+    row.append(head, info, sel);
     sec.append(row);
   }
   const opts = h('div', { class: 'opts' });
@@ -220,7 +231,7 @@ function renderTeam(r, pi) {
     const locked = state.locked.some((l) => l.name === m.name);
     const card = h('article', { class: `member ${locked ? 'is-locked' : ''}` });
     card.innerHTML = `
-      <header>${sprite(m.name)}<strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon.meta)}</header>
+      <header>${sprite(m.name)}<strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon)}</header>
       <div class="kv"><span>持ち物</span><b>${esc(m.item || '自由')}</b></div>
       <div class="kv"><span>特性</span><b>${esc(m.ability)}</b><span>性格</span><b>${esc(m.nature)}</b></div>
       ${statLine(m)}
@@ -259,7 +270,7 @@ function renderAlternatives(r, pi, mi) {
       const m = a.member;
       const sign = a.delta >= 0 ? '+' : '';
       const li = h('li', {}, `${sprite(m.name, 'sm')}<div class="alt-body">
-        <div><b>${esc(m.name)}</b> ${tierBadge(m.mon.meta)} <span class="muted small">評価 ${sign}${a.delta.toFixed(1)}</span></div>
+        <div><b>${esc(m.name)}</b> ${tierBadge(m.mon)} <span class="muted small">評価 ${sign}${a.delta.toFixed(1)}</span></div>
         <div class="small">${esc(m.set.label)} ＠${esc(m.item || '自由')}</div>
         <div class="small muted">${esc(m.set.moves.join('・'))}</div>
         ${a.good.length ? `<div class="small">得意：${a.good.map(esc).join('・')}</div>` : ''}
@@ -363,7 +374,7 @@ function scoreCell(v) {
 function renderThreats(r) {
   const top = r.threats.slice(0, 30);
   const head = r.members.map((d) => `<th class="vert">${esc(d.member.name)}</th>`).join('');
-  const body = top.map((t) => `<tr><th>${esc(t.name)} ${tierBadge(t.tier)}</th>${t.scores.map(scoreCell).join('')}</tr>`).join('');
+  const body = top.map((t) => `<tr><th>${esc(t.name)} ${tierBadge(DEX.get(t.name))}</th>${t.scores.map(scoreCell).join('')}</tr>`).join('');
   return h('div', { class: 'panel wide' }, `<h3>仮想敵との対面（使用率の高い順）</h3>
     <div class="scroll"><table class="threats"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>
     <p class="muted small">◎有利 ○やや有利 △五分 ▲やや不利 ×不利。各ポケモンの代表的な型同士で、簡易ダメージ計算・素早さ・状態異常技・大爆発による1:1交換などから見積もった目安です。</p>`);

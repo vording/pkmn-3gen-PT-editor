@@ -9,6 +9,7 @@ import { BANNED, BANNED_ITEMS } from '../data/rules.js';
 import { buildMember, roleLabels } from './model.js';
 import { matchup, defensiveMultiplier } from './matchup.js';
 import { findCombos, antiComboTools } from '../data/strategy.js';
+import { OWN_RANK } from '../data/ownrank.js';
 
 // 上位入賞構築に共通する枠（stoic氏「上位入賞66構築の分類」より）
 export const STRUCTURE_SLOTS = [
@@ -38,7 +39,12 @@ function threatWeight(mon) {
 }
 
 export const DEX = new Map(POKEDEX.map((m) => [m.name, m]));
-for (const m of POKEDEX) m.meta = metaTier(m);
+for (const m of POKEDEX) {
+  m.meta = metaTier(m);
+  // 表示用の独自ランク（npm run rank で生成）。未生成・対象外は E
+  m.own = OWN_RANK[m.name] ?? { rank: 'E', pos: null, score: null };
+}
+export const OWN_ORDER = ['S+', 'S', 'A', 'B', 'C', 'D', 'E'];
 
 export function isUsable(mon) {
   return !mon.banned && !BANNED.has(mon.name) && mon.base && mon.sets.length > 0;
@@ -79,7 +85,7 @@ function context() {
     if (!w) continue;
     const n = w >= 5 ? 3 : w >= 1.5 ? 2 : 1;
     const idx = usableSets(mon).slice(0, n);
-    for (const i of idx) threats.push({ member: buildMember(mon, i), weight: w / idx.length, name: mon.name, tier: mon.meta });
+    for (const i of idx) threats.push({ member: buildMember(mon, i), weight: w / idx.length, name: mon.name, tier: mon.own.rank });
   }
   cache = { usable, threats, members: new Map(), rows: new Map() };
   return cache;
@@ -348,7 +354,7 @@ function describeTeam(members, locked) {
   const prof = typeProfile(members);
   const warnings = [];
   for (const t of TYPES) if (prof[t].weak >= 3) warnings.push(`${TYPE_JP[t]}タイプの技を弱点とするポケモンが${prof[t].weak}体`);
-  for (const t of threatTable) if (t.bestScore < -0.1 && t.weight >= 1) warnings.push(`${t.name}に有利なポケモンがいない（環境ランク${TIER_LABEL[t.tier]}）`);
+  for (const t of threatTable) if (t.bestScore < -0.1 && t.weight >= 1) warnings.push(`${t.name}に有利なポケモンがいない（ランク${t.tier}）`);
   if (!members.some((m) => m.tags.phaze || m.tags.encore)) warnings.push('『ほえる』『ふきとばし』『アンコール』などの積み・バトン対策がない');
   if (members.filter((m) => m.tags.sleep).length >= 2) warnings.push('眠り技持ちが複数（ルール上、同時に2体以上は眠らせられない）');
   if (members.some((m) => m.ability === 'かげふみ')) warnings.push('相手も『かげふみ』を手持ちに入れている場合、ソーナンスは選出できない');
@@ -400,4 +406,27 @@ export function alternatives(members, index, { includeMinor = false, allowLati =
 // 型を指定した6体で提案結果を作り直す（入れ替え後の表示用）
 export function evaluateTeam(members, locked = []) {
   return describeTeam(members, locked);
+}
+
+// ---- 独自ランク ----
+// 対面性能（仮想敵への平均有利度。型は上位3つのうち最良）＋環境での使われ方（使用率・入賞率）＋考察本の重要度
+export function computeOwnScores() {
+  const { usable, threats } = context();
+  const totalW = threats.reduce((a, t) => a + t.weight, 0);
+  return usable.map((mon) => {
+    let power = -1;
+    let bestSet = 0;
+    for (const i of usableSets(mon).slice(0, 3)) {
+      const row = rowOf(memberOf(mon.name, i));
+      let sum = 0;
+      let w = 0;
+      threats.forEach((t, ti) => { if (t.name !== mon.name) { sum += row[ti] * t.weight; w += t.weight; } });
+      const v = w ? sum / w : 0;
+      if (v > power) { power = v; bestSet = i; }
+    }
+    const usage = Math.max(mon.usage2026 ?? 0, (mon.rank2026?.usage ?? 0) / 100);
+    const use = Math.sqrt((usage + (mon.topUsage2026 ?? 0)) / 2);
+    const book = { S: 0.4, A: 0.3, B: 0.15, C: 0 }[mon.tier] ?? 0;
+    return { name: mon.name, power, use, book, bestSet, totalW };
+  });
 }
