@@ -325,6 +325,35 @@ function renderPlan(r) {
   return el;
 }
 
+// 画像のプレビューをポップアップで表示する。スマホは長押し、PCは右クリックで保存
+function showImagePreview(canvas, filename) {
+  const url = canvas.toDataURL('image/png');
+  const overlay = h('div', { class: 'preview-overlay', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'パーティ画像のプレビュー' });
+  const box = h('div', { class: 'preview-box' });
+  const hint = h('p', { class: 'preview-hint' }, '画像を<b>長押し</b>して保存してください<span class="muted">（PCは右クリック →「名前を付けて画像を保存」）</span>');
+  const img = h('img', { class: 'preview-img', src: url, alt: 'パーティ画像' });
+  const actions = h('div', { class: 'preview-actions' });
+  const dl = h('button', { class: 'ghost', type: 'button' }, 'ダウンロード');
+  dl.addEventListener('click', () => saveCanvas(canvas, filename).catch(() => flash('ダウンロードできませんでした。長押しで保存してください')));
+  const close = h('button', { class: 'primary', type: 'button' }, '閉じる');
+  const prevOverflow = document.body.style.overflow;
+  const onKey = (e) => { if (e.key === 'Escape') done(); };
+  function done() {
+    overlay.remove();
+    document.body.style.overflow = prevOverflow;
+    document.removeEventListener('keydown', onKey);
+  }
+  close.addEventListener('click', done);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) done(); });
+  document.addEventListener('keydown', onKey);
+  actions.append(dl, close);
+  box.append(hint, img, actions);
+  overlay.append(box);
+  document.body.append(overlay);
+  document.body.style.overflow = 'hidden';
+  close.focus();
+}
+
 async function saveImage(r, pi, btn) {
   btn.disabled = true;
   btn.textContent = '作成中…';
@@ -335,8 +364,7 @@ async function saveImage(r, pi, btn) {
       spriteUrl: (n) => (DEX_NO[n] ? `${SPRITE_BASE}${DEX_NO[n]}.png` : null),
       selections: r.selections.slice(0, 2),
     });
-    await saveCanvas(canvas, `party-${r.members.map((d) => d.member.name).join('_')}.png`);
-    flash('画像を保存しました');
+    showImagePreview(canvas, `party-${r.members.map((d) => d.member.name).join('_')}.png`);
   } catch (e) {
     flash('画像の作成に失敗しました');
   } finally {
