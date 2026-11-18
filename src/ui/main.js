@@ -283,7 +283,6 @@ function renderTeam(r, pi) {
       <div class="spread-slot"></div>
       <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
       <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
-      <div class="why"><p class="why-h">採用理由</p><ul>${(d.why ?? d.reasons.map((text) => ({ kind: '', text }))).map((w) => `<li>${w.kind ? `<span class="why-k">${esc(w.kind)}</span>` : ''}${esc(w.text)}</li>`).join('')}</ul></div>
       ${adjustmentHtml(m)}
       <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
     card.querySelector('.spread-slot').replaceWith(buppaBox(r, pi, mi));
@@ -298,7 +297,7 @@ function renderTeam(r, pi) {
   wrap.append(members);
 
   const grid2 = h('div', { class: 'analysis' });
-  grid2.append(renderPlan(r), renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(view));
+  grid2.append(renderPlan(r), renderWhy(r), renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(view));
   wrap.append(grid2);
   return wrap;
 }
@@ -347,6 +346,17 @@ function adjustmentHtml(m) {
     ${list('耐久（使用率の高い相手の一番痛い技）', n.bulk)}
     ${list('火力（使用率の高い相手への一番通る技）', n.power)}
     <p class="muted small">Lv50・乱数85〜100%・急所や積み・持ち物の回復なしで計算。相手は各ポケモンの代表的な型です。</p></details>`;
+}
+
+// 採用理由（6体分をまとめて表示）
+function renderWhy(r) {
+  const el = h('div', { class: 'panel wide why-panel' });
+  el.innerHTML = `<h3>採用理由</h3>
+    <div class="why-grid">${r.members.map((d) => `<section class="why">
+      <p class="why-h">${sprite(d.member.name, 'sm')}${esc(d.member.name)}</p>
+      <ul>${(d.why ?? d.reasons.map((text) => ({ kind: '', text }))).map((w) => `<li>${w.kind ? `<span class="why-k">${esc(w.kind)}</span>` : ''}${esc(w.text)}</li>`).join('')}</ul>
+    </section>`).join('')}</div>`;
+  return el;
 }
 
 function renderPlan(r) {
