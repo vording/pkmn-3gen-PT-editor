@@ -152,8 +152,14 @@ export const SPREAD_PRESETS = [
 
 // 技構成から主に使う攻撃能力（A か C）
 export function mainAttackStat(m) {
-  const phys = m.moves.filter((x) => x.power > 0 && x.physical).reduce((a, x) => a + x.power, 0);
-  const spec = m.moves.filter((x) => x.power > 0 && !x.physical).reduce((a, x) => a + x.power, 0);
+  // 性格で A か C を上げているならそちらを優先
+  const mod = NATURES[m.nature];
+  if (mod && mod[0] === 1) return 'A';
+  if (mod && mod[0] === 3) return 'C';
+  // そうでなければ「技の威力 × 種族値」の大きい方（自爆・大爆発は除く）
+  const atk = m.moves.filter((x) => x.power > 0 && x.name !== 'じばく' && x.name !== 'だいばくはつ');
+  const phys = atk.filter((x) => x.physical).reduce((a, x) => Math.max(a, x.power), 0) * m.mon.base[1];
+  const spec = atk.filter((x) => !x.physical).reduce((a, x) => Math.max(a, x.power), 0) * m.mon.base[3];
   if (phys === spec) return m.mon.base[1] >= m.mon.base[3] ? 'A' : 'C';
   return phys > spec ? 'A' : 'C';
 }

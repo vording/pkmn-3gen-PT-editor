@@ -212,6 +212,9 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
   .nat-down { color: #7aa8ff; }
 }
 
-.spread { display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; font-size: .8rem; color: var(--muted); }
-.spread select { flex: 1; min-width: 0; padding: 3px 6px; font-size: .8rem; }
-@media (max-width: 560px) { .spread select { font-size: 16px; } }
+.buppa { font-size: .8rem; border: 1px dashed var(--line); border-radius: 8px; padding: 6px 8px; margin: 4px 0 6px; }
+.buppa.on { border-style: solid; border-color: var(--accent); background: var(--accent-soft); }
+.buppa ul { margin: 2px 0; padding-left: 1.1em; }
+.buppa .ghost.small { margin-top: 4px; width: 100%; }
+.buppa-h { font-weight: 700; color: var(--accent); }
+.buppa-now { margin: 0; font-size: .75rem; color: var(--accent); font-weight: 600; }

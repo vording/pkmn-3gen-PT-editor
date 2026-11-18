@@ -4,10 +4,10 @@ import { SAMPLE_TEAMS, TOURNAMENT_PARTIES } from '../data/teams.js';
 import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
 import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
 import { recommend, isUsable, usableSets, OWN_ORDER, memberOf, DEX, alternatives, evaluateTeam } from '../engine/recommend.js';
-import { STAT_KEYS, natureEffect, SPREAD_PRESETS, spreadLabel, withSpread } from '../engine/model.js';
+import { STAT_KEYS, natureEffect, spreadLabel } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
-import { adjustmentNotes, gamePlan } from '../engine/analysis.js';
+import { adjustmentNotes, gamePlan, recommendBuppa } from '../engine/analysis.js';
 import { drawTeamImage, saveCanvas } from './image.js';
 
 const MAX_LOCK = 3;
@@ -19,7 +19,7 @@ const state = {
   includeMinor: false,
   allowLati: true,
   results: null,
-  spreads: {}, // 配分の切り替え（提案番号:枠:型ID → プリセット）
+  spreads: {}, // ぶっぱ表示の切り替え（提案番号:枠:型ID → 'buppa' | 'set'）
   active: 0,
   busy: false,
 };
@@ -214,30 +214,41 @@ function renderResults() {
   return sec;
 }
 
-// 配分の切り替え（表示・画像・テキストだけに反映。パーティの評価はそのまま）
+// ぶっぱ（252振り）の提案。「この配分で見る」で表示・画像・テキストを切り替える（パーティの評価はそのまま）
 const spreadKey = (pi, mi, m) => `${pi}:${mi}:${m.id}`;
+const buppaCache = new Map();
+function buppaOf(m) {
+  if (!buppaCache.has(m.id)) buppaCache.set(m.id, recommendBuppa(m));
+  return buppaCache.get(m.id);
+}
 function viewResult(r, pi) {
   return {
     ...r,
-    members: r.members.map((d, mi) => {
-      const key = state.spreads[spreadKey(pi, mi, d.member)];
-      return key && key !== 'set' ? { ...d, member: withSpread(d.member, key) } : d;
-    }),
+    members: r.members.map((d, mi) => (state.spreads[spreadKey(pi, mi, d.member)] === 'buppa'
+      ? { ...d, member: buppaOf(d.member).member } : d)),
   };
 }
 
-function spreadSelect(r, pi, mi) {
+function buppaBox(r, pi, mi) {
   const base = r.members[mi].member;
-  const cur = state.spreads[spreadKey(pi, mi, base)] ?? 'set';
-  const wrap = h('label', { class: 'spread' }, '<span>配分</span>');
-  const sel = h('select', { 'aria-label': `${base.name}の配分` });
-  sel.innerHTML = SPREAD_PRESETS.map((p) => `<option value="${p.key}" ${p.key === cur ? 'selected' : ''}>${esc(spreadLabel(base, p.key))}</option>`).join('');
-  sel.addEventListener('change', () => {
-    state.spreads[spreadKey(pi, mi, base)] = sel.value;
+  const b = buppaOf(base);
+  const on = state.spreads[spreadKey(pi, mi, base)] === 'buppa';
+  const el = h('div', { class: `buppa ${on ? 'on' : ''}` });
+  if (b.same) {
+    el.innerHTML = `<span class="buppa-h">ぶっぱにするなら</span> 今の配分がすでに<b>${esc(spreadLabel(base, b.key))}</b>`;
+    return el;
+  }
+  const sign = b.delta >= 0 ? '+' : '';
+  el.innerHTML = `<div><span class="buppa-h">ぶっぱにするなら</span> <b>${esc(spreadLabel(base, b.key))}</b>
+      <span class="muted">（仮想敵への有利度 ${sign}${b.delta.toFixed(2)}）</span></div>
+    ${b.reasons.length ? `<ul>${b.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}`;
+  const btn = h('button', { class: 'ghost small', type: 'button' }, on ? '型の配分に戻す' : 'この配分で見る');
+  btn.addEventListener('click', () => {
+    state.spreads[spreadKey(pi, mi, base)] = on ? 'set' : 'buppa';
     render();
   });
-  wrap.append(sel);
-  return wrap;
+  el.append(btn);
+  return el;
 }
 
 function statLine(m) {
@@ -268,14 +279,14 @@ function renderTeam(r, pi) {
       <header>${sprite(m.name)}<strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon)}</header>
       <div class="kv"><span>持ち物</span><b>${esc(m.item || '自由')}</b></div>
       <div class="kv"><span>特性</span><b>${esc(m.ability)}</b><span>性格</span><b>${esc(m.nature)}</b></div>
-      ${statLine(m)}
+      ${statLine(m)}${m.spreadKey ? `<p class="buppa-now">※ ぶっぱ（${esc(spreadLabel(m, m.spreadKey))}）で表示中</p>` : ''}
       <div class="spread-slot"></div>
       <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
       <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
       <ul class="reasons">${d.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
       ${adjustmentHtml(m)}
       <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
-    card.querySelector('.spread-slot').replaceWith(spreadSelect(r, pi, mi));
+    card.querySelector('.spread-slot').replaceWith(buppaBox(r, pi, mi));
     if (!locked) {
       card.append(renderAlternatives(r, pi, mi));
       const btn = h('button', { class: 'ghost small', type: 'button', disabled: state.busy }, 'おまかせで入れ替え');

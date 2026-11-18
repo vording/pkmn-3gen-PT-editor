@@ -1,5 +1,6 @@
 // 提案パーティの「調整の目安」と「戦い方」を、計算とルールから文章にする
-import { damageRolls, koChance } from './matchup.js';
+import { damageRolls, koChance, matchup } from './matchup.js';
+import { SPREAD_PRESETS, withSpread, natureEffect } from './model.js';
 import { getThreats, STRUCTURE_SLOTS } from './recommend.js';
 import { findCombos, classifyArchetype, ARCHETYPES, antiComboTools } from '../data/strategy.js';
 
@@ -228,4 +229,62 @@ export function gamePlan(result) {
     vs,
     weak,
   };
+}
+
+// ---- ぶっぱ（252・252振り）にするならどれか ----
+// 型の性格・技・持ち物はそのままで、4通りの252振りを仮想敵（使用率で重み付け）への平均有利度で比べる
+export function recommendBuppa(member) {
+  const threats = getThreats().filter((t) => t.name !== member.name);
+  const totalW = threats.reduce((a, t) => a + t.weight, 0);
+  const evalM = (m) => {
+    const per = new Map();
+    let sum = 0;
+    for (const t of threats) {
+      const v = matchup(m, t.member);
+      sum += v * t.weight;
+      const e = per.get(t.name) ?? { w: 0, s: 0 };
+      e.w += t.weight; e.s += v * t.weight;
+      per.set(t.name, e);
+    }
+    return { avg: sum / totalW, per };
+  };
+  const base = evalM(member);
+  // 性格と噛み合う配分だけを候補にする（例：素早さ上昇の性格なら AS/CS）
+  const nat = natureEffect(member.nature);
+  let allowed = ['atkSpe', 'hpAtk', 'hpDef', 'hpSpd'];
+  if (nat.up === 5) allowed = ['atkSpe'];
+  else if (nat.up === 1 || nat.up === 3) allowed = ['atkSpe', 'hpAtk'];
+  else if (nat.up === 2) allowed = ['hpDef'];
+  else if (nat.up === 4) allowed = ['hpSpd'];
+  if (nat.down === 5) allowed = allowed.filter((k) => k !== 'atkSpe');
+  if (!allowed.length) allowed = ['hpAtk', 'hpDef', 'hpSpd'];
+  let best = null;
+  for (const p of SPREAD_PRESETS) {
+    if (!p.evs || !allowed.includes(p.key)) continue;
+    const m = withSpread(member, p.key);
+    const r = evalM(m);
+    if (!best || r.avg > best.avg) best = { key: p.key, member: m, ...r };
+  }
+  const reasons = [];
+  // 素早さ：新たに抜ける相手
+  const s0 = member.stats[5];
+  const s1 = best.member.stats[5];
+  const major = new Set([...base.per.entries()].filter(([, e]) => e.w >= 0.8).map(([n]) => n));
+  const speedOf = new Map();
+  for (const t of threats) if (major.has(t.name)) speedOf.set(t.name, Math.max(speedOf.get(t.name) ?? 0, t.member.stats[5]));
+  if (s1 > s0) {
+    const gained = [...speedOf].filter(([, s]) => s >= s0 && s < s1).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n, s]) => `${n}(${s})`);
+    reasons.push(gained.length ? `S${s0}→${s1}：${gained.join('・')}抜き` : `S${s0}→${s1}`);
+  } else if (s1 < s0) {
+    const lost = [...speedOf].filter(([, s]) => s >= s1 && s < s0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n, s]) => `${n}(${s})`);
+    reasons.push(`S${s0}→${s1}${lost.length ? `（${lost.join('・')}に抜かれる）` : ''}`);
+  }
+  // 有利度が上がる／下がる相手
+  const diff = [...best.per.entries()].filter(([n]) => major.has(n)).map(([n, e]) => ({ n, d: (e.s - base.per.get(n).s) / e.w }));
+  const up = diff.filter((x) => x.d > 0.1).sort((a, b) => b.d - a.d).slice(0, 4).map((x) => x.n);
+  const down = diff.filter((x) => x.d < -0.1).sort((a, b) => a.d - b.d).slice(0, 3).map((x) => x.n);
+  if (up.length) reasons.push(`有利になる相手：${up.join('・')}`);
+  if (down.length) reasons.push(`不利になる相手：${down.join('・')}`);
+  const same = best.member.evs.every((v, i) => v === member.evs[i]);
+  return { key: best.key, member: best.member, delta: best.avg - base.avg, reasons, same };
 }

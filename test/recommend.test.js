@@ -172,3 +172,15 @@ test('252振りへの切り替え：性格はそのままで努力値と実数�
   assert.deepEqual(hb.evs, [252, 0, 252, 0, 4, 0]);
   assert.equal(withSpread(ptera, 'set'), ptera);
 });
+
+test('ぶっぱの提案：性格に合う252振りを1つ選び、理由を返す', async () => {
+  const { recommendBuppa } = await import('../src/engine/analysis.js');
+  const ptera = DEX.get('プテラ');
+  const b = recommendBuppa(memberOf('プテラ', ptera.sets.findIndex((s) => s.nature === 'ようき')));
+  assert.equal(b.key, 'atkSpe'); // 素早さ上昇の性格なら AS
+  const snorlax = DEX.get('カビゴン');
+  const b2 = recommendBuppa(memberOf('カビゴン', snorlax.sets.findIndex((s) => s.nature === 'いじっぱり' && s.moves.includes('のろい'))));
+  assert.ok(['atkSpe', 'hpAtk'].includes(b2.key));
+  assert.ok(b2.member.evs.filter((v) => v === 252).length === 2);
+  assert.ok(Array.isArray(b2.reasons));
+});
