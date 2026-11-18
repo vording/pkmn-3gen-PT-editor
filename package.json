@@ -1,0 +1,11 @@
+{
+  "name": "pokemon-3gen-simulator",
+  "version": "0.1.0",
+  "description": "第三世代準拠のバトルロジックで遊べる、オリジナルモンスターの対戦シミュレーター",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  }
+}
