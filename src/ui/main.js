@@ -7,6 +7,8 @@ import { recommend, isUsable, usableSets, TIER_LABEL, TIER_ORDER, memberOf, DEX 
 import { STAT_KEYS } from '../engine/model.js';
 import { DEX_NO } from '../data/dexno.js';
 import { resolveMove } from '../engine/model.js';
+import { adjustmentNotes, gamePlan } from '../engine/analysis.js';
+import { drawTeamImage, saveCanvas } from './image.js';
 
 const MAX_LOCK = 3;
 const state = {
@@ -206,6 +208,11 @@ function statLine(m) {
 
 function renderTeam(r, pi) {
   const wrap = h('div', { class: 'team' });
+  const bar = h('div', { class: 'team-bar' });
+  const save = h('button', { class: 'ghost', type: 'button' }, '画像で保存');
+  save.addEventListener('click', () => saveImage(r, pi, save));
+  bar.append(save);
+  wrap.append(bar);
   const members = h('div', { class: 'members' });
   r.members.forEach((d, mi) => {
     const m = d.member;
@@ -219,6 +226,7 @@ function renderTeam(r, pi) {
       <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
       <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
       <ul class="reasons">${d.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      ${adjustmentHtml(m)}
       <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
     if (!locked) {
       const btn = h('button', { class: 'ghost small', type: 'button', disabled: state.busy }, 'この枠を入れ替え');
@@ -230,9 +238,57 @@ function renderTeam(r, pi) {
   wrap.append(members);
 
   const grid2 = h('div', { class: 'analysis' });
-  grid2.append(renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(r));
+  grid2.append(renderPlan(r), renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(r));
   wrap.append(grid2);
   return wrap;
+}
+
+// 調整の目安（素早さライン・耐久・火力）
+function adjustmentHtml(m) {
+  const n = adjustmentNotes(m);
+  const list = (title, items) => (items.length ? `<p class="adj-h">${title}</p><ul>${items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
+  return `<details class="adj"><summary>調整の目安${m.evsEstimated ? '（努力値は推定）' : ''}</summary>
+    <p class="adj-h">素早さ</p><p>${esc(n.speed)}</p>
+    ${list('耐久（使用率の高い相手の一番痛い技）', n.bulk)}
+    ${list('火力（使用率の高い相手への一番通る技）', n.power)}
+    <p class="muted small">Lv50・乱数85〜100%・急所や積み・持ち物の回復なしで計算。相手は各ポケモンの代表的な型です。</p></details>`;
+}
+
+function renderPlan(r) {
+  const plan = gamePlan(r);
+  const el = h('div', { class: 'panel wide plan' });
+  el.innerHTML = `<h3>戦い方</h3>
+    <p class="adj-h">勝ち筋</p><ul>${plan.concept.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+    <p class="adj-h">基本の選出と先発</p>
+    <p>先発 <b>${esc(plan.lead.name)}</b>（${esc(plan.lead.why)}）、後ろに ${plan.lead.back.map(esc).join('・')}</p>
+    <p class="adj-h">各ポケモンの動かし方</p>
+    <dl class="per">${plan.perMember.map((p) => `<dt>${esc(p.name)}</dt><dd>${p.lines.map(esc).join('<br>')}</dd>`).join('')}</dl>
+    <p class="adj-h">相手のポケモン別（使用率の高い順）</p>
+    <ul class="vs">${plan.vs.map((v) => `<li><b>${esc(v.name)}</b> → ${esc(v.best)}で対応（${esc(v.tone)}）</li>`).join('')}</ul>
+    ${plan.weak.length ? `<p class="adj-h">苦手な相手</p><ul>${plan.weak.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+    ${plan.notes.length ? `<p class="adj-h">ルール上の注意</p><ul>${plan.notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+    <p class="muted small">役割・技構成と対面評価から自動で作った目安です。</p>`;
+  return el;
+}
+
+async function saveImage(r, pi, btn) {
+  btn.disabled = true;
+  btn.textContent = '作成中…';
+  try {
+    const canvas = await drawTeamImage(r, {
+      title: `提案${pi + 1}：${r.members.map((d) => d.member.name).join('・')}`,
+      subtitle: `${RULE_NAME}　固定：${state.locked.map((l) => l.name).join('・') || 'なし'}`,
+      spriteUrl: (n) => (DEX_NO[n] ? `${SPRITE_BASE}${DEX_NO[n]}.png` : null),
+      selections: r.selections.slice(0, 2),
+    });
+    await saveCanvas(canvas, `party-${r.members.map((d) => d.member.name).join('_')}.png`);
+    flash('画像を保存しました');
+  } catch (e) {
+    flash('画像の作成に失敗しました');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '画像で保存';
+  }
 }
 
 function renderSelection(r) {

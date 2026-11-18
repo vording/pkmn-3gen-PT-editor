@@ -100,3 +100,22 @@ test('道具：まがったスプーンでエスパー技が強くなる', () =>
 test('正誤表：ヌオーはいわなだれを覚えない', () => {
   for (const s of DEX.get('ヌオー').sets) assert.ok(!s.moves.includes('いわなだれ'));
 });
+
+test('調整の目安：確定数と素早さラインを出す', async () => {
+  const { adjustmentNotes, koText } = await import('../src/engine/analysis.js');
+  assert.equal(koText(Array(16).fill(60), 100), '確定2発');
+  assert.equal(koText(Array.from({ length: 16 }, (_, i) => 90 + i), 100), '乱数1発（38%）');
+  const n = adjustmentNotes(memberOf('メタグロス', 0));
+  assert.match(n.speed, /^S\d+：/);
+  assert.ok(n.bulk.length > 0 && n.power.length > 0);
+});
+
+test('戦い方：勝ち筋・先発・各ポケモンの動かし方を返す', async () => {
+  const { gamePlan } = await import('../src/engine/analysis.js');
+  const [r] = recommend({ locked: [{ name: 'バシャーモ', setIndex: 0 }], count: 1, beamWidth: 10 });
+  const plan = gamePlan(r);
+  assert.ok(plan.concept.length >= 1);
+  assert.ok(r.members.some((d) => d.member.name === plan.lead.name));
+  assert.equal(plan.perMember.length, 6);
+  assert.ok(plan.perMember.every((p) => p.lines.length >= 1));
+});

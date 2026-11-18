@@ -20,41 +20,83 @@ export function defensiveMultiplier(member, moveType) {
   return eff * abilityMultiplier(member.ability, moveType, eff);
 }
 
-// 1回の攻撃で与えるダメージ（最大HPに対する割合、期待値）
-export function damageFraction(att, def, move) {
-  const [, , B, , D] = def.stats;
-  const hp = def.stats[0];
-  if (move.power === 0) {
-    if (move.name === 'ちきゅうなげ') return def.types.includes('ghost') ? 0 : 50 / hp;
-    if (move.name === 'ナイトヘッド') return def.types.includes('normal') ? 0 : 50 / hp;
-    if (move.name === 'じわれ') return def.types.includes('flying') || def.ability === 'ふゆう' ? 0 : 0.3;
-    if (move.name === 'ぜったいれいど') return 0.3;
-    if (move.name === 'つのドリル' || move.name === 'ハサミギロチン') return def.types.includes('ghost') ? 0 : 0.3;
-    return 0;
-  }
+const ITEM_BOOST = { まがったスプーン: 'psychic', りゅうのキバ: 'dragon', じしゃく: 'electric', もくたん: 'fire' };
+
+// 乱数を除いたダメージの元（base）と倍率。威力0の技は null
+// expectSetup: 積み技・『きんぞくおん』の1回分の補正を見込む（対面評価用）。調整の表示では使わない
+function damageCore(att, def, move, expectSetup) {
+  if (move.power === 0) return null;
   const physical = move.physical;
   let A = physical ? att.stats[1] : att.stats[3];
-  let Dv = physical ? B : D;
+  let Dv = physical ? def.stats[2] : def.stats[4];
   if (move.name === 'じばく' || move.name === 'だいばくはつ') Dv /= 2;
   if (physical && att.item === 'こだわりハチマキ') A *= 1.5;
   if (physical && att.item === 'ふといホネ' && (att.name === 'ガラガラ' || att.name === 'カラカラ')) A *= 2;
   if (!physical && att.item === 'でんきだま' && att.name === 'ピカチュウ') A *= 2;
-  if (move.type === 'psychic' && att.item === 'まがったスプーン') A *= 1.1;
-  if (move.type === 'dragon' && att.item === 'りゅうのキバ') A *= 1.1;
-  if (move.type === 'electric' && att.item === 'じしゃく') A *= 1.1;
-  if (move.type === 'fire' && att.item === 'もくたん') A *= 1.1;
   if (!physical && att.item === 'しんかいのキバ' && att.name === 'パールル') A *= 2;
-  // 積み技・『きんぞくおん』は1回分の補正を見込む
-  if (physical && (att.tags.setupPhys || att.tags.curse)) A *= 1.4;
-  if (!physical && (att.tags.setupSpec || att.tags.metalSound)) A *= 1.4;
+  if (ITEM_BOOST[att.item] === move.type) A *= 1.1;
+  if (expectSetup) {
+    if (physical && (att.tags.setupPhys || att.tags.curse)) A *= 1.4;
+    if (!physical && (att.tags.setupSpec || att.tags.metalSound)) A *= 1.4;
+  }
   let power = move.power;
   if (move.name === 'きしかいせい' || move.name === 'じたばた') power = att.tags.sub ? 150 : 80;
   const eff = typeEffectiveness(move.type, def.types);
   const abil = abilityMultiplier(def.ability, move.type, eff);
-  if (eff * abil === 0) return 0;
-  const base = Math.floor(Math.floor((Math.floor((2 * 50) / 5 + 2) * power * A) / Dv) / 50) + 2;
+  if (eff * abil === 0) return { base: 0, mult: 0 };
+  const base = Math.floor(Math.floor((Math.floor((2 * 50) / 5 + 2) * power * Math.floor(A)) / Math.floor(Dv)) / 50) + 2;
   const stab = att.types.includes(move.type) ? 1.5 : 1;
-  return (base * stab * eff * abil * 0.925) / hp;
+  return { base, mult: stab * eff * abil };
+}
+
+// 固定ダメージ・一撃必殺の扱い（null は通常の攻撃技）
+function specialDamage(def, move) {
+  const hp = def.stats[0];
+  switch (move.name) {
+    case 'ちきゅうなげ': return { fixed: def.types.includes('ghost') ? 0 : 50 };
+    case 'ナイトヘッド': return { fixed: def.types.includes('normal') ? 0 : 50 };
+    case 'じわれ': return { ohko: def.types.includes('flying') || def.ability === 'ふゆう' ? 0 : 0.3, hp };
+    case 'ぜったいれいど': return { ohko: 0.3, hp };
+    case 'つのドリル': case 'ハサミギロチン': return { ohko: def.types.includes('ghost') ? 0 : 0.3, hp };
+    default: return null;
+  }
+}
+
+// 1回の攻撃で与えるダメージ（最大HPに対する割合、期待値）
+export function damageFraction(att, def, move) {
+  const hp = def.stats[0];
+  if (move.power === 0) {
+    const sp = specialDamage(def, move);
+    if (!sp) return 0;
+    return sp.fixed != null ? sp.fixed / hp : sp.ohko;
+  }
+  const c = damageCore(att, def, move, true);
+  return (c.base * c.mult * 0.925) / hp;
+}
+
+// 乱数16通り（85〜100%）のダメージ。変化技・一撃必殺は null
+export function damageRolls(att, def, move) {
+  if (move.power === 0) {
+    const sp = specialDamage(def, move);
+    return sp && sp.fixed != null ? Array(16).fill(sp.fixed) : null;
+  }
+  const c = damageCore(att, def, move, false);
+  if (!c.mult) return Array(16).fill(0);
+  return Array.from({ length: 16 }, (_, i) => Math.max(1, Math.floor((c.base * c.mult * (85 + i)) / 100)));
+}
+
+// n 発で倒れる確率（乱数のみ考慮、急所・回復なし）
+export function koChance(rolls, hp, hits) {
+  let dist = new Map([[0, 1]]);
+  for (let h = 0; h < hits; h++) {
+    const next = new Map();
+    for (const [sum, p] of dist) for (const r of rolls) {
+      const k = Math.min(hp, sum + r);
+      next.set(k, (next.get(k) ?? 0) + p / rolls.length);
+    }
+    dist = next;
+  }
+  return dist.get(hp) ?? 0;
 }
 
 const EXPLOSION = new Set(['じばく', 'だいばくはつ']);

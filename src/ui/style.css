@@ -146,3 +146,16 @@ textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; f
   .moves { grid-template-columns: 1fr; }
   .top h1 { font-size: 1.2rem; }
 }
+.team-bar { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+.adj { margin: 6px 0 2px; font-size: .8rem; border-top: 1px dashed var(--line); padding-top: 4px; }
+.adj summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.adj ul { margin: 2px 0 4px; padding-left: 1.1em; }
+.adj p { margin: 2px 0; }
+.adj-h { font-weight: 700; margin: 8px 0 2px !important; font-size: .85rem; }
+.plan p { margin: 2px 0; }
+.plan ul { margin: 2px 0 4px; }
+.plan .per { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 4px 0; font-size: .88rem; }
+.plan .per dt { font-weight: 700; }
+.plan .per dd { margin: 0; }
+.plan .vs { columns: 2 220px; }
+@media (max-width: 560px) { .plan .per { grid-template-columns: 1fr; } .plan .per dd { margin-bottom: 6px; } }
