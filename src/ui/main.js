@@ -284,7 +284,7 @@ function renderTeam(r, pi) {
       <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
       <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
       ${adjustmentHtml(m)}
-      <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
+      <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.url ? ` <a href="${esc(m.set.url)}" target="_blank" rel="noopener">記事</a>` : ''}${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
     card.querySelector('.spread-slot').replaceWith(buppaBox(r, pi, mi));
     if (!locked) {
       card.append(renderAlternatives(r, pi, mi));
@@ -481,6 +481,7 @@ function renderSamples(r) {
     const ul = h('ul', { class: 'samples' });
     for (const { t, hit } of examples) {
       ul.append(h('li', {}, `<details><summary>${esc(t.title)}（${t.year}）<span class="muted small"> 共通${hit}体・${esc(t.source)}</span></summary>
+        ${t.url ? `<p class="small"><a href="${esc(t.url)}" target="_blank" rel="noopener">元の記事を開く</a></p>` : ''}
         <ul>${t.members.map((m) => `<li class="${names.has(m.name) ? 'hit' : ''}"><b>${esc(m.name)}</b> ＠${esc(m.item)}${m.nature ? ` ／ ${esc(m.nature)}` : ''}${m.moves.length ? ` ／ ${esc(m.moves.join('・'))}` : ''}</li>`).join('')}</ul></details>`));
     }
     el.append(h('p', { class: 'small sub-h' }, '構築例（考察本・ブログ記事）'), ul);
