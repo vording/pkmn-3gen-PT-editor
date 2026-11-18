@@ -1,4 +1,4 @@
-// タイプ定義と相性表（第三世代準拠の相性・物理/特殊区分）
+// タイプ定義と相性表（第三世代：フェアリーなし、ゴースト・あくは鋼に半減、物理/特殊はタイプで決まる）
 
 export const TYPES = [
   'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground',
@@ -6,9 +6,16 @@ export const TYPES = [
 ];
 
 export const TYPE_NAMES = {
-  normal: '無', fire: '炎', water: '水', electric: '電気', grass: '草', ice: '氷',
-  fighting: '格闘', poison: '毒', ground: '地面', flying: '飛行', psychic: '超能力',
-  bug: '虫', rock: '岩', ghost: '霊', dragon: '竜', dark: '悪', steel: '鋼',
+  normal: 'ノーマル', fire: 'ほのお', water: 'みず', electric: 'でんき', grass: 'くさ', ice: 'こおり',
+  fighting: 'かくとう', poison: 'どく', ground: 'じめん', flying: 'ひこう', psychic: 'エスパー',
+  bug: 'むし', rock: 'いわ', ghost: 'ゴースト', dragon: 'ドラゴン', dark: 'あく', steel: 'はがね',
+};
+
+// 『めざめるパワー○』の表記 → タイプ
+export const HIDDEN_POWER_TYPES = {
+  飛: 'flying', 格: 'fighting', 草: 'grass', 氷: 'ice', 炎: 'fire', 水: 'water', 霊: 'ghost',
+  虫: 'bug', 岩: 'rock', 悪: 'dark', 竜: 'dragon', 超: 'psychic', 電: 'electric', 地: 'ground',
+  毒: 'poison', 鋼: 'steel',
 };
 
 export const TYPE_COLORS = {

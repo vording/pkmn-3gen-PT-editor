@@ -1,7 +1,7 @@
 {
   "name": "pokemon-3gen-simulator",
-  "version": "0.1.0",
-  "description": "第三世代準拠のバトルロジックで遊べる、オリジナルモンスターの対戦シミュレーター",
+  "version": "0.2.0",
+  "description": "ポケモン第三世代（エメラルド）後期シングルのパーティ作成ツール",
   "type": "module",
   "private": true,
   "scripts": {

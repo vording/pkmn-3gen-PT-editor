@@ -3,15 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>三世代式 対戦シミュレーター</title>
+  <title>三世代 後期シングル PT作成ツール</title>
   <link rel="stylesheet" href="src/ui/style.css">
 </head>
 <body>
   <header class="top">
-    <h1>三世代式 対戦シミュレーター</h1>
-    <p>第三世代準拠のバトルロジック ・ オリジナルモンスター</p>
+    <div class="wrap">
+      <h1>三世代 後期シングル PT作成ツール</h1>
+      <p class="sub">好きなポケモンを選ぶと、それを軸にしたパーティを提案します（エメラルド／XD・6→3見せ合い・Lv50）</p>
+    </div>
   </header>
-  <main id="app"></main>
+  <main id="app" class="wrap"></main>
+  <footer class="wrap foot">
+    型・努力値配分・参考構築のデータは『ポケモンエメラルドシングルバトル考察本』v1.4 の掲載内容をもとにしています。
+    提案はタイプ相性と簡易ダメージ計算による目安です。非公式のファンツールです。
+  </footer>
   <script type="module" src="src/ui/main.js"></script>
 </body>
 </html>

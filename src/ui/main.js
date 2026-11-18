@@ -1,246 +1,306 @@
-import { SPECIES } from '../data/species.js';
-import { MOVES } from '../data/moves.js';
-import { ABILITIES } from '../data/abilities.js';
-import { TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
-import { NATURES, STAT_NAMES, STAT_KEYS } from '../engine/stats.js';
-import { Battle, STATUS_NAMES } from '../engine/battle.js';
-import { chooseAction } from '../engine/ai.js';
+// ブラウザUI（依存なし）
+import { POKEDEX } from '../data/pokedex.js';
+import { SAMPLE_TEAMS } from '../data/teams.js';
+import { TYPES, TYPE_NAMES, TYPE_COLORS } from '../data/types.js';
+import { RULE_NAME, RULE_NOTES } from '../data/rules.js';
+import { recommend, isUsable, usableSets, TIER_LABEL, memberOf, DEX } from '../engine/recommend.js';
+import { STAT_KEYS } from '../engine/model.js';
+import { resolveMove } from '../engine/model.js';
+
+const MAX_LOCK = 3;
+const state = {
+  query: '',
+  type: '',
+  tier: '',
+  locked: [], // { name, setIndex|null }
+  includeMinor: false,
+  allowLati: true,
+  results: null,
+  active: 0,
+  busy: false,
+};
 
 const app = document.getElementById('app');
-const EVS = { hp: 84, atk: 84, def: 84, spa: 84, spd: 84, spe: 84 };
-const WEATHER_LABEL = { rain: '🌧 雨', sun: '☀ 日差し', sand: '🌪 砂嵐', hail: '🌨 あられ' };
-const STATUS_COLOR = { brn: '#e2632b', par: '#c9a400', psn: '#9b45a8', tox: '#6e2a7a', slp: '#7f8c8d', frz: '#4fb6d6' };
-
-const state = {
-  team: [], // { species, nature, moves }
-  battle: null,
-  busy: false,
-  fast: false,
-  log: [],
-};
-
-const h = (tag, attrs = {}, ...children) => {
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const h = (tag, attrs = {}, html = '') => {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
-    if (k === 'class') el.className = v;
-    else if (k === 'style') el.style.cssText = v;
-    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
-    else if (v === true) el.setAttribute(k, '');
-    else if (v !== false && v != null) el.setAttribute(k, v);
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) el.setAttribute(k, v === true ? '' : v);
   }
-  for (const c of children.flat()) if (c != null) el.append(c instanceof Node ? c : String(c));
+  if (html) el.innerHTML = html;
   return el;
 };
+const typeBadge = (t) => `<span class="type" style="--c:${TYPE_COLORS[t]}">${TYPE_NAMES[t]}</span>`;
+const tierBadge = (tier) => `<span class="tier tier-${tier}">${tier === 'S' ? '最上位' : tier === 'A' ? '☆☆☆' : tier === 'B' ? '☆☆' : '☆'}</span>`;
+const kata = (s) => s.replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60));
 
-const typeBadge = (t) => h('span', { class: 'type', style: `background:${TYPE_COLORS[t]}` }, TYPE_NAMES[t]);
-const statusBadge = (s) => (s ? h('span', { class: 'status', style: `background:${STATUS_COLOR[s]}` }, STATUS_NAMES[s]) : null);
+const USABLE = POKEDEX.filter(isUsable).sort((a, b) => 'SABC'.indexOf(a.tier) - 'SABC'.indexOf(b.tier) || a.name.localeCompare(b.name, 'ja'));
 
-function token(speciesId, size = '') {
-  const sp = SPECIES[speciesId];
-  const [a, b = a] = sp.types.map((t) => TYPE_COLORS[t]);
-  return h('div', { class: `token ${size}`, style: `background:linear-gradient(135deg, ${a} 50%, ${b} 50%)` },
-    h('span', {}, sp.name[0]));
+function render() {
+  app.innerHTML = '';
+  app.append(renderPicker(), renderLocked(), renderResults());
 }
 
-const moveLabel = (id) => {
-  const m = MOVES[id];
-  return `${m.name}（${TYPE_NAMES[m.type]}・威力${m.power || '-'}・命中${m.accuracy ?? '-'}）`;
-};
-
-// ───────── 編成画面 ─────────
-
-function addMember(id) {
-  if (state.team.length >= 6 || state.team.some((m) => m.species === id)) return;
-  state.team.push({ species: id, nature: 'neutral', moves: SPECIES[id].learnset.slice(0, 4) });
-  renderBuilder();
-}
-
-function randomTeam(n, exclude = []) {
-  const pool = Object.keys(SPECIES).filter((id) => !exclude.includes(id));
-  const natureIds = Object.keys(NATURES);
-  const team = [];
-  while (team.length < n && pool.length) {
-    const id = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
-    team.push({ species: id, nature: natureIds[Math.floor(Math.random() * natureIds.length)], moves: SPECIES[id].learnset.slice(0, 4) });
-  }
-  return team;
-}
-
-function renderBuilder() {
-  const natureOptions = Object.entries(NATURES).filter(([id]) => !id.startsWith('neutral-'));
-  const dex = h('div', { class: 'dex' }, Object.values(SPECIES).map((sp) => {
-    const picked = state.team.some((m) => m.species === sp.id);
-    const bst = STAT_KEYS.reduce((s, k) => s + sp.base[k], 0);
-    return h('button', { class: `dex-card ${picked ? 'picked' : ''}`, onclick: () => addMember(sp.id), disabled: picked || state.team.length >= 6 },
-      token(sp.id, 'sm'),
-      h('div', { class: 'dex-info' },
-        h('strong', {}, sp.name),
-        h('div', {}, sp.types.map(typeBadge)),
-        h('small', { title: ABILITIES[sp.ability].desc }, `${ABILITIES[sp.ability].name} ・ 合計${bst}`)));
-  }));
-
-  const team = h('div', { class: 'team' }, state.team.length === 0
-    ? h('p', { class: 'hint' }, '左の図鑑からモンスターを選んでください（1〜6体）。')
-    : state.team.map((member, i) => {
-      const sp = SPECIES[member.species];
-      return h('div', { class: 'member' },
-        h('div', { class: 'member-head' },
-          token(sp.id, 'sm'),
-          h('div', {}, h('strong', {}, sp.name), ' ', sp.types.map(typeBadge),
-            h('div', { class: 'stats' }, STAT_KEYS.map((k) => `${STAT_NAMES[k]}${sp.base[k]}`).join(' / '))),
-          h('button', { class: 'remove', onclick: () => { state.team.splice(i, 1); renderBuilder(); } }, '外す')),
-        h('label', {}, '性格 ',
-          h('select', { onchange: (e) => { member.nature = e.target.value; } },
-            natureOptions.map(([id, n]) => h('option', { value: id, selected: id === member.nature }, n.name)))),
-        h('div', { class: 'moves-edit' }, member.moves.map((mid, j) =>
-          h('select', { onchange: (e) => { member.moves[j] = e.target.value; } },
-            sp.learnset.map((id) => h('option', { value: id, selected: id === mid, disabled: id !== mid && member.moves.includes(id) }, moveLabel(id)))))));
-    }));
-
-  app.replaceChildren(h('section', { class: 'builder' },
-    h('div', { class: 'panel' }, h('h2', {}, '図鑑'), dex),
-    h('div', { class: 'panel' },
-      h('h2', {}, `あなたのチーム（${state.team.length}/6）`),
-      team,
-      h('div', { class: 'actions' },
-        h('button', { onclick: () => { state.team = randomTeam(3); renderBuilder(); } }, 'おまかせ3体'),
-        h('button', { class: 'primary', disabled: state.team.length === 0, onclick: startBattle }, 'バトル開始！')),
-      h('p', { class: 'hint' }, `Lv50・個体値31・努力値は全能力84。相手は同じ数のモンスターをランダムで選びます。`))));
-}
-
-// ───────── バトル画面 ─────────
-
-function startBattle() {
-  const mine = state.team.map((m) => ({ ...m, moves: [...m.moves], evs: EVS }));
-  const foes = randomTeam(mine.length).map((m) => ({ ...m, evs: EVS }));
-  state.battle = new Battle({ teams: [mine, foes], names: ['あなた', 'ライバル'], seed: Date.now() });
-  state.log = [];
-  state.busy = false;
-  renderBattleScreen();
-  play(state.battle.drainEvents());
-}
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function play(events) {
-  state.busy = true;
-  renderControls();
-  for (const e of events) {
-    renderField(e.view);
-    if (e.text) {
-      state.log.push(e.text);
-      renderLog();
-      if (!state.fast) await sleep(e.text.startsWith('──') ? 250 : 520);
+// ---- ポケモン選択 ----
+function renderPicker() {
+  const sec = h('section', { class: 'card' });
+  sec.append(h('h2', {}, '1. 好きなポケモンを選ぶ <small>（最大3体まで固定できます）</small>'));
+  const controls = h('div', { class: 'controls' });
+  const search = h('input', { type: 'search', placeholder: '名前で検索（ひらがな可）', value: state.query, 'aria-label': 'ポケモン名で検索' });
+  search.addEventListener('input', () => { state.query = search.value; updateGrid(); });
+  const typeSel = h('select', { 'aria-label': 'タイプで絞り込み' }, `<option value="">すべてのタイプ</option>${TYPES.map((t) => `<option value="${t}" ${state.type === t ? 'selected' : ''}>${TYPE_NAMES[t]}</option>`).join('')}`);
+  typeSel.addEventListener('change', () => { state.type = typeSel.value; updateGrid(); });
+  const tierSel = h('select', { 'aria-label': '重要度で絞り込み' }, `<option value="">すべての重要度</option>${['S', 'A', 'B', 'C'].map((t) => `<option value="${t}" ${state.tier === t ? 'selected' : ''}>${TIER_LABEL[t]}</option>`).join('')}`);
+  tierSel.addEventListener('change', () => { state.tier = tierSel.value; updateGrid(); });
+  controls.append(search, typeSel, tierSel);
+  const grid = h('div', { class: 'grid' });
+  sec.append(controls, grid);
+  function updateGrid() {
+    const q = kata(state.query.trim());
+    const list = USABLE.filter((m) => (!q || m.name.includes(q)) && (!state.type || m.types.includes(state.type)) && (!state.tier || m.tier === state.tier));
+    grid.innerHTML = '';
+    for (const m of list) {
+      const on = state.locked.some((l) => l.name === m.name);
+      const b = h('button', { class: `mon ${on ? 'on' : ''}`, type: 'button', title: `${m.name}（${m.base.join('-')}）`, 'aria-pressed': on ? 'true' : 'false' },
+        `<span class="mon-name">${esc(m.name)}</span><span class="mon-meta">${m.types.map(typeBadge).join('')}${tierBadge(m.tier)}</span>`);
+      b.addEventListener('click', () => toggleLock(m.name));
+      grid.append(b);
     }
+    if (!list.length) grid.innerHTML = '<p class="muted">該当するポケモンがいません</p>';
   }
-  state.busy = false;
-  renderField(state.battle.snapshot());
-  renderControls();
+  updateGrid();
+  return sec;
 }
 
-async function act(action) {
-  const b = state.battle;
-  if (state.busy) return;
-  if (b.phase === 'move') {
-    await play(b.playTurn([action, chooseAction(b, 1)]));
-  } else if (b.phase === 'switch') {
-    await play(b.replace(0, action.index));
+function toggleLock(name) {
+  const i = state.locked.findIndex((l) => l.name === name);
+  if (i >= 0) state.locked.splice(i, 1);
+  else if (state.locked.length < MAX_LOCK) state.locked.push({ name, setIndex: null });
+  else return flash(`固定できるのは${MAX_LOCK}体までです`);
+  render();
+}
+
+function flash(msg) {
+  const t = h('div', { class: 'toast', role: 'status' }, esc(msg));
+  document.body.append(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+const setSummary = (s) => `${s.label}：${s.moves.join('・')}${s.item ? ` ＠${s.item}` : ''}`;
+
+// ---- 選択中のポケモンと型 ----
+function renderLocked() {
+  const sec = h('section', { class: 'card' });
+  sec.append(h('h2', {}, '2. 型と条件を決めて提案'));
+  if (!state.locked.length) {
+    sec.append(h('p', { class: 'muted' }, '上の一覧からポケモンを選んでください。'));
   }
-  if (b.phase === 'switch' && b.pendingSwitch[1]) {
-    await play(b.replace(1, chooseAction(b, 1).index));
+  for (const l of state.locked) {
+    const mon = DEX.get(l.name);
+    const row = h('div', { class: 'locked' });
+    const head = h('div', { class: 'locked-head' }, `<strong>${esc(mon.name)}</strong> ${mon.types.map(typeBadge).join('')} ${tierBadge(mon.tier)}
+      <span class="muted small">種族値 ${mon.base.join('-')} ／ 特性 ${esc(mon.abilities.join('・'))}${mon.spread ? ` ／ 代表的な配分 ${esc(mon.spread)}` : ''}</span>`);
+    const rm = h('button', { class: 'ghost', type: 'button', 'aria-label': `${mon.name}を外す` }, '外す');
+    rm.addEventListener('click', () => toggleLock(mon.name));
+    head.append(rm);
+    const sel = h('select', { class: 'set-select', 'aria-label': `${mon.name}の型` });
+    sel.innerHTML = `<option value="">型はおまかせ（パーティに合わせて選ぶ）</option>${usableSets(mon).map((i) => `<option value="${i}" ${l.setIndex === i ? 'selected' : ''}>${esc(setSummary(mon.sets[i]))}</option>`).join('')}`;
+    sel.addEventListener('change', () => { l.setIndex = sel.value === '' ? null : Number(sel.value); });
+    row.append(head, sel);
+    sec.append(row);
   }
+  const opts = h('div', { class: 'opts' });
+  const minor = h('label', {}, `<input type="checkbox" ${state.includeMinor ? 'checked' : ''}> 重要度☆のポケモンも候補に入れる`);
+  minor.querySelector('input').addEventListener('change', (e) => { state.includeMinor = e.target.checked; });
+  const lati = h('label', {}, `<input type="checkbox" ${state.allowLati ? '' : 'checked'}> ラティアス・ラティオス禁止ルール`);
+  lati.querySelector('input').addEventListener('change', (e) => { state.allowLati = !e.target.checked; });
+  opts.append(minor, lati);
+  const go = h('button', { class: 'primary', type: 'button', disabled: !state.locked.length || state.busy }, state.busy ? '計算中…' : 'パーティを提案する');
+  go.addEventListener('click', run);
+  sec.append(opts, go);
+  const rules = h('details', { class: 'rules' }, `<summary>${esc(RULE_NAME)} のルール</summary><ul>${RULE_NOTES.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>`);
+  sec.append(rules);
+  return sec;
 }
 
-function renderBattleScreen() {
-  app.replaceChildren(h('section', { class: 'battle' },
-    h('div', { class: 'field', id: 'field' }),
-    h('div', { class: 'side-col' },
-      h('div', { class: 'controls panel', id: 'controls' }),
-      h('div', { class: 'log panel', id: 'log' }))));
-}
-
-function monPanel(view, sideIdx) {
-  const side = view.sides[sideIdx];
-  const mon = side.team[side.active];
-  const pct = Math.max(0, mon.hp / mon.maxHp);
-  const color = pct > 0.5 ? '#3cb371' : pct > 0.2 ? '#e1b12c' : '#e0453a';
-  const stages = Object.entries(mon.stages).filter(([, v]) => v !== 0)
-    .map(([k, v]) => h('span', { class: `stage ${v > 0 ? 'up' : 'down'}` }, `${STAT_NAMES[k]}${v > 0 ? '+' : ''}${v}`));
-  return h('div', { class: `combatant ${sideIdx === 0 ? 'me' : 'foe'} ${mon.hp <= 0 ? 'fainted' : ''}` },
-    h('div', { class: 'hud' },
-      h('div', { class: 'hud-name' }, h('strong', {}, mon.name), h('span', {}, `Lv${mon.level}`)),
-      h('div', {}, mon.types.map(typeBadge), statusBadge(mon.status)),
-      h('div', { class: 'hpbar' }, h('div', { style: `width:${pct * 100}%;background:${color}` })),
-      h('div', { class: 'hp-text' }, sideIdx === 0 ? `${mon.hp} / ${mon.maxHp}` : `${Math.ceil(pct * 100)}%`),
-      h('div', { class: 'stages' }, stages),
-      h('div', { class: 'party' }, side.team.map((m) => h('span', { class: `ball ${m.hp <= 0 ? 'out' : m.status ? 'sick' : ''}`, title: m.name })))),
-    token(mon.speciesId, 'lg'));
-}
-
-function renderField(view) {
-  const field = document.getElementById('field');
-  if (!field) return;
-  field.replaceChildren(
-    h('div', { class: 'field-top' },
-      h('span', {}, view.turn ? `ターン ${view.turn}` : 'バトル開始'),
-      view.weather ? h('span', { class: 'weather' }, WEATHER_LABEL[view.weather]) : null),
-    monPanel(view, 1),
-    monPanel(view, 0));
-}
-
-function renderLog() {
-  const log = document.getElementById('log');
-  if (!log) return;
-  log.replaceChildren(...state.log.map((t) => h('div', { class: t.startsWith('──') ? 'turn-line' : '' }, t)));
-  log.scrollTop = log.scrollHeight;
-}
-
-function renderControls() {
-  const el = document.getElementById('controls');
-  if (!el) return;
-  const b = state.battle;
-  const fastToggle = h('label', { class: 'fast' },
-    h('input', { type: 'checkbox', checked: state.fast, onchange: (e) => { state.fast = e.target.checked; } }), ' 早送り');
-
-  if (b.phase === 'end') {
-    const msg = b.winner === 0 ? '勝利！' : b.winner === 1 ? '敗北…' : '引き分け';
-    el.replaceChildren(h('h2', {}, msg),
-      h('div', { class: 'actions' },
-        h('button', { class: 'primary', onclick: startBattle }, '同じチームで再戦'),
-        h('button', { onclick: renderBuilder }, 'チーム編成へ')));
-    return;
+function run() {
+  if (!state.allowLati && state.locked.some((l) => l.name === 'ラティオス' || l.name === 'ラティアス')) {
+    return flash('ラティ禁止ルールではラティアス・ラティオスを固定できません');
   }
-
-  const legal = b.legalActions(0);
-  const has = (type, index) => legal.some((a) => a.type === type && a.index === index);
-  const me = b.active(0);
-  const forced = b.phase === 'switch';
-
-  const moveButtons = forced ? null : h('div', { class: 'move-grid' },
-    legal.some((a) => a.type === 'move' && a.index === -1)
-      ? h('button', { class: 'move', onclick: () => act({ type: 'move', index: -1 }), disabled: state.busy }, '捨て鉢の一撃')
-      : me.moves.map((slot, i) => {
-        const m = MOVES[slot.id];
-        return h('button', {
-          class: 'move', style: `--c:${TYPE_COLORS[m.type]}`, disabled: state.busy || !has('move', i),
-          title: moveLabel(slot.id), onclick: () => act({ type: 'move', index: i }),
-        }, h('strong', {}, m.name), h('small', {}, `${TYPE_NAMES[m.type]}　PP ${slot.pp}/${slot.maxPp}`));
-      }));
-
-  const switchButtons = h('div', { class: 'switch-grid' }, b.sides[0].team.map((m, i) =>
-    h('button', { class: 'switch', disabled: state.busy || !has('switch', i), onclick: () => act({ type: 'switch', index: i }) },
-      token(m.speciesId, 'xs'),
-      h('span', {}, m.name, h('small', {}, ` ${m.hp}/${m.maxHp}`)),
-      statusBadge(m.status))));
-
-  el.replaceChildren(
-    h('div', { class: 'controls-head' },
-      h('h2', {}, state.busy ? '…' : forced ? '次に出すモンスターを選んでください' : `${me.name}は どうする？`),
-      fastToggle),
-    moveButtons,
-    h('h3', {}, '交代'),
-    switchButtons,
-    h('div', { class: 'actions' }, h('button', { class: 'ghost', onclick: () => { if (!state.busy && confirm('降参しますか？')) renderBuilder(); } }, '降参する')));
+  state.busy = true;
+  render();
+  setTimeout(() => {
+    try {
+      state.results = recommend({ locked: state.locked.map((l) => ({ ...l })), includeMinor: state.includeMinor, allowLati: state.allowLati });
+      state.active = 0;
+    } finally {
+      state.busy = false;
+      render();
+      document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 30);
 }
 
-renderBuilder();
+// 1枠だけ入れ替え：他の5体を型ごと固定して再計算
+function replaceMember(pi, mi) {
+  const team = state.results[pi];
+  const others = team.members.filter((_, i) => i !== mi).map((d) => ({ name: d.member.name, setIndex: d.member.setIndex }));
+  const removed = team.members[mi].member.name;
+  const exclude = new Set([removed]);
+  state.busy = true;
+  render();
+  setTimeout(() => {
+    try {
+      const [next] = recommend({ locked: others, count: 1, includeMinor: state.includeMinor, allowLati: state.allowLati, exclude });
+      if (next) {
+        // 元の並び順を保つ
+        const added = next.members.find((d) => !others.some((o) => o.name === d.member.name));
+        const order = team.members.map((d, i) => (i === mi ? added.member.name : d.member.name));
+        next.members.sort((a, b) => order.indexOf(a.member.name) - order.indexOf(b.member.name));
+        const lockedNames = new Set(state.locked.map((l) => l.name));
+        for (const d of next.members) if (!lockedNames.has(d.member.name)) d.reasons = d.reasons.filter((r) => r !== '選択したポケモン');
+        state.results[pi] = next;
+        flash(`${removed} → ${added.member.name} に入れ替えました`);
+      } else flash('入れ替え候補が見つかりませんでした');
+    } finally {
+      state.busy = false;
+      render();
+    }
+  }, 30);
+}
+
+// ---- 結果 ----
+function renderResults() {
+  const sec = h('section', { class: 'card', id: 'results' });
+  if (!state.results) return h('div');
+  sec.append(h('h2', {}, '3. 提案パーティ'));
+  if (!state.results.length) {
+    sec.append(h('p', {}, '条件に合うパーティが見つかりませんでした。'));
+    return sec;
+  }
+  const tabs = h('div', { class: 'tabs', role: 'tablist' });
+  state.results.forEach((r, i) => {
+    const t = h('button', { type: 'button', role: 'tab', class: i === state.active ? 'on' : '', 'aria-selected': i === state.active ? 'true' : 'false' },
+      `提案${i + 1}<span class="tab-sub">${r.members.map((d) => esc(d.member.name)).join('・')}</span>`);
+    t.addEventListener('click', () => { state.active = i; render(); });
+    tabs.append(t);
+  });
+  sec.append(tabs);
+  const r = state.results[state.active];
+  sec.append(renderTeam(r, state.active));
+  return sec;
+}
+
+function statLine(m) {
+  const ev = m.evs.map((v, i) => (v ? `${STAT_KEYS[i]}${v}` : '')).filter(Boolean).join(' ');
+  return `<div class="stats"><span>実数値 ${m.stats.join('-')}</span><span>努力値 ${ev || '—'}${m.evsEstimated ? '（目安）' : ''}</span></div>`;
+}
+
+function renderTeam(r, pi) {
+  const wrap = h('div', { class: 'team' });
+  const members = h('div', { class: 'members' });
+  r.members.forEach((d, mi) => {
+    const m = d.member;
+    const locked = state.locked.some((l) => l.name === m.name);
+    const card = h('article', { class: `member ${locked ? 'is-locked' : ''}` });
+    card.innerHTML = `
+      <header><strong class="name">${esc(m.name)}</strong>${m.types.map(typeBadge).join('')}${tierBadge(m.mon.tier)}</header>
+      <div class="kv"><span>持ち物</span><b>${esc(m.item || '自由')}</b></div>
+      <div class="kv"><span>特性</span><b>${esc(m.ability)}</b><span>性格</span><b>${esc(m.nature)}</b></div>
+      ${statLine(m)}
+      <ul class="moves">${m.set.moves.map((mv) => { const x = resolveMove(mv); return `<li style="--c:${TYPE_COLORS[x.type]}">${esc(mv)}</li>`; }).join('')}</ul>
+      <div class="roles">${d.roles.map((x) => `<span>${esc(x)}</span>`).join('')}</div>
+      <ul class="reasons">${d.reasons.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      <p class="src">型：${esc(m.set.label)}（出典：${esc([m.set.source, ...(m.set.alsoIn ?? [])].join('／'))}）${m.set.note ? `<br>${esc(m.set.note)}` : ''}</p>`;
+    if (!locked) {
+      const btn = h('button', { class: 'ghost small', type: 'button', disabled: state.busy }, 'この枠を入れ替え');
+      btn.addEventListener('click', () => replaceMember(pi, mi));
+      card.append(btn);
+    }
+    members.append(card);
+  });
+  wrap.append(members);
+
+  const grid2 = h('div', { class: 'analysis' });
+  grid2.append(renderSelection(r), renderWarnings(r), renderTypes(r), renderThreats(r), renderSamples(r), renderExport(r));
+  wrap.append(grid2);
+  return wrap;
+}
+
+function renderSelection(r) {
+  return h('div', { class: 'panel' }, `<h3>おすすめ選出（6→3）</h3>
+    <ol>${r.selections.map((s) => `<li>${s.map(esc).join(' ＋ ')}</li>`).join('')}</ol>
+    <p class="muted small">選んだポケモンを含む3体のうち、仮想敵への対応範囲が広い組み合わせです。相手の6体を見て調整してください。</p>`);
+}
+
+function renderWarnings(r) {
+  const items = r.warnings.length ? r.warnings.map((w) => `<li>${esc(w)}</li>`).join('') : '<li class="ok">大きな穴は見つかりませんでした</li>';
+  return h('div', { class: 'panel' }, `<h3>チェック</h3><ul class="warn">${items}</ul>`);
+}
+
+function renderTypes(r) {
+  const rows = TYPES.map((t) => {
+    const { weak, resist } = r.typeProfile[t];
+    const cls = weak >= 3 ? 'bad' : weak - resist >= 2 ? 'warn' : '';
+    return `<tr class="${cls}"><th>${typeBadge(t)}</th><td>${'●'.repeat(weak) || '—'}</td><td>${'○'.repeat(resist) || '—'}</td></tr>`;
+  }).join('');
+  return h('div', { class: 'panel' }, `<h3>タイプ相性（受ける側）</h3>
+    <table class="types"><thead><tr><th>技のタイプ</th><th>弱点</th><th>半減・無効</th></tr></thead><tbody>${rows}</tbody></table>`);
+}
+
+function scoreCell(v) {
+  const cls = v > 0.5 ? 'g2' : v > 0.15 ? 'g1' : v > -0.15 ? 'n' : v > -0.5 ? 'r1' : 'r2';
+  return `<td class="${cls}" title="${v.toFixed(2)}">${v > 0.5 ? '◎' : v > 0.15 ? '○' : v > -0.15 ? '△' : v > -0.5 ? '▲' : '×'}</td>`;
+}
+
+function renderThreats(r) {
+  const top = r.threats.filter((t) => t.tier === 'S' || t.tier === 'A').slice(0, 30);
+  const head = r.members.map((d) => `<th class="vert">${esc(d.member.name)}</th>`).join('');
+  const body = top.map((t) => `<tr><th>${esc(t.name)} ${tierBadge(t.tier)}</th>${t.scores.map(scoreCell).join('')}</tr>`).join('');
+  return h('div', { class: 'panel wide' }, `<h3>仮想敵との対面（環境上位）</h3>
+    <div class="scroll"><table class="threats"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div>
+    <p class="muted small">◎有利 ○やや有利 △五分 ▲やや不利 ×不利。各ポケモンの代表的な型同士で、簡易ダメージ計算・素早さ・状態異常技・大爆発による1:1交換などから見積もった目安です。</p>`);
+}
+
+function renderSamples(r) {
+  const el = h('div', { class: 'panel' }, '<h3>考察本の参考構築</h3>');
+  const names = new Set(r.members.map((d) => d.member.name));
+  const related = SAMPLE_TEAMS.map((t) => ({ t, hit: t.members.filter((m) => names.has(m.name)).length }))
+    .filter((x) => x.hit >= 2).sort((a, b) => b.hit - a.hit).slice(0, 5);
+  if (!related.length) {
+    el.append(h('p', { class: 'muted small' }, '共通するポケモンが2体以上いる掲載構築はありません。'));
+    return el;
+  }
+  const ul = h('ul', { class: 'samples' });
+  for (const { t, hit } of related) {
+    const li = h('li', {}, `<details><summary>#${String(t.no).padStart(2, '0')} ${esc(t.title)}（${t.year}）<span class="muted small"> 共通${hit}体</span></summary>
+      <ul>${t.members.map((m) => `<li class="${names.has(m.name) ? 'hit' : ''}"><b>${esc(m.name)}</b> ＠${esc(m.item)} ／ ${esc(m.nature)} ／ ${esc(m.moves.join('・'))}</li>`).join('')}</ul></details>`);
+    ul.append(li);
+  }
+  el.append(ul);
+  return el;
+}
+
+function exportText(r) {
+  return r.members.map(({ member: m }) => {
+    const ev = m.evs.map((v, i) => (v ? `${STAT_KEYS[i]}${v}` : '')).filter(Boolean).join(' ');
+    return [`${m.name} @ ${m.item || '（自由）'}`, `特性: ${m.ability} ／ 性格: ${m.nature}`, `努力値: ${ev}${m.evsEstimated ? '（目安）' : ''} ／ 実数値: ${m.stats.join('-')}`, ...m.set.moves.map((x) => `- ${x}`)].join('\n');
+  }).join('\n\n');
+}
+
+function renderExport(r) {
+  const el = h('div', { class: 'panel wide' }, '<h3>テキストで書き出し</h3>');
+  const ta = h('textarea', { readonly: true, rows: 10, 'aria-label': 'パーティのテキスト' });
+  ta.value = exportText(r);
+  const btn = h('button', { class: 'ghost', type: 'button' }, 'コピー');
+  btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(ta.value); flash('コピーしました'); } catch { ta.select(); flash('選択しました。Ctrl+C でコピーしてください'); }
+  });
+  el.append(ta, btn);
+  return el;
+}
+
+// 初期表示でエンジンのキャッシュを温めておく（最初の提案を速くする）
+setTimeout(() => { try { memberOf('カビゴン', 0); } catch { /* noop */ } }, 0);
+render();
